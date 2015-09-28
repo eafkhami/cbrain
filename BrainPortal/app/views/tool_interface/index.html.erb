@@ -1,0 +1,128 @@
+<h1>Graphical Tools Interface</h1>
+
+<b>Type:</b><br/>
+
+<% @tag_tools.each do |tag|%>
+
+<%if tag.name.downcase == "preprocessing" || tag.name.downcase == "fmri" || tag.name.downcase == "dt1" || tag.name.downcase == "structural" || tag.name.downcase == "genomic"%>
+	<input type="checkbox" style="margin-left:0px;display:none;" id="<%=tag.name%>"/><a 	href="javascript:tagClick('<%=tag.name%>');"><%= image_tag "#{tag.name.downcase}-off.png", :id => "#{tag.name}-icon"%></a>
+<% end %>
+
+<% end %>
+
+<br/><br/><b>Sofware Package:</b><br/>
+
+<% @tag_tools.each do |tag|%>
+
+<%if tag.name.downcase == "fsl" || tag.name.downcase == "minc" || tag.name.downcase == "civet" || tag.name.downcase == "niak"%>
+	<input type="checkbox" style="margin-left:0px;display:none;" id="<%=tag.name%>"/><a 	href="javascript:tagClick('<%=tag.name%>');"><%= image_tag "#{tag.name.downcase}-off.png", :id => "#{tag.name}-icon"%></a>
+<% end %>
+
+<% end %>
+
+<br/><br/>
+<a href="javascript:clearTags();">clear tags</a><br/><br/>
+
+
+<table id="tools" style="width: 360px;">
+
+
+<%@tools.each do |tool|%>
+
+<tr
+<%tool.tags.each do |tool_tag|%>
+data-<%= tool_tag.name%> = 'true'
+<%end%>
+>
+<td>
+<%=
+"<b>#{tool.name}</b><br/>Tags: #{tool.tags.map{ |tag| tag.name }.join(', ')}<br/>".html_safe
+%>
+<%= link_to( "link to URL", tool.url) if !tool.url.nil?%>
+</td>
+</tr>
+
+<%end%>
+</table>
+<br/>
+
+
+
+<% content_for :head do %>
+  <script type="text/javascript">
+
+tagArray = [];
+
+$(document).ready(function() {
+
+	$(":checkbox").attr("checked",false);
+
+	$(":checkbox").change(function() {
+
+		imageId = "#" + $(this).attr('id') + "-icon";
+
+		if ($(this).is(":checked")){
+			tagArray.push($(this).attr('id'));
+			$(imageId).attr("src","/images/" + $(this).attr('id').toLowerCase()+".png");
+		}else{
+			$(imageId).attr("src","/images/" + $(this).attr('id').toLowerCase()+"-off.png")
+			var index = tagArray.indexOf($(this).attr('id'));
+			if (index > -1) {
+			    tagArray.splice(index, 1);
+			}
+
+		}
+		filterTags();
+	});
+
+
+
+});
+
+
+function clearTags(){
+	$(":checkbox").each(function() {
+	  if ($(this).is(":checked")){
+	  	 $(this).trigger( "click" );
+	  }
+	});
+}
+
+function tagClick(tagId){
+	$("#"+tagId).trigger( "click" );
+}
+
+
+function filterTags(){
+
+	var stringToEval = "";
+	var arrayLength = tagArray.length;
+	for (var i = 0; i < arrayLength; i++) {
+		if (i+1 == arrayLength){
+		    stringToEval = stringToEval + "$(this).data(\"" + tagArray[i].toLowerCase() + "\") !== undefined";
+		}else{
+			stringToEval = stringToEval + "$(this).data(\"" + tagArray[i].toLowerCase() + "\") !== undefined && ";
+		}
+	}
+
+	if (arrayLength == 0){
+		$('#tools tr').show( "slow" );
+	}else{
+		$('#tools tr').hide();
+	}
+
+
+
+	$('#tools tr').filter(function() {
+	    return eval(stringToEval); //$(this).data(tag) !== undefined;
+	}).show( "slow" );
+
+}
+
+  </script>
+<% end %>
+
+
+
+
+

@@ -24,6 +24,8 @@
 
 CbrainRailsPortal::Application.routes.draw do
 
+  get "tool_interface/index"
+
   # Session
   resource  :session do
     member do
@@ -160,6 +162,7 @@ CbrainRailsPortal::Application.routes.draw do
   get   '/session_status'         => 'sessions#show'
   get   '/logout'                 => 'sessions#destroy'
   get   '/filter_proxy'           => 'application#filter_proxy'
+  get   '/tools_gui'              => 'tool_interface#index'
 
   # Report Maker
   get   "/report",                :controller => :portal, :action => :report
