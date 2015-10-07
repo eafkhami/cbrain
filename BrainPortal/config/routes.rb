@@ -24,7 +24,12 @@
 
 CbrainRailsPortal::Application.routes.draw do
 
-  get "tool_interface/index"
+
+  resources :tool_interface, :only => [:index] do
+    collection do
+       get :save_to_session
+    end
+  end
 
   # Session
   resource  :session do

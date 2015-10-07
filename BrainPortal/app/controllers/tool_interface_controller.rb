@@ -15,4 +15,14 @@ class ToolInterfaceController < ApplicationController
     end
 
   end
+
+  def save_to_session
+    puts "AAAAAA"
+    puts params.inspect
+
+    redirect_to tool_interface_index_path
+
+
+  end
+
 end

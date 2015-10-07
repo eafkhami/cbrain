@@ -50,8 +50,9 @@ uniq_id = rand(100000).to_s
   <% if num_online > 0 %>
     <%= submit_tag "Launch Tool",
       "class"       => "button launch_tool",
-      "data-url"    => url_for(:controller => :tasks, :action => :new),
-      "data-method" => "POST"
+      "data-url"    => url_for(:controller => :tasks, :action => :new)#,
+      #"data-url"    => url_for(:controller => :tool_interface, :action => :save_to_session),
+      #"data-method" => "POST"
     %>
   <% end %>
 

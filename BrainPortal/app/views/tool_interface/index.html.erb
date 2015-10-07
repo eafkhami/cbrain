@@ -1,5 +1,60 @@
 <h1>Graphical Tools Interface</h1>
 
+
+<div class="context-menu-one box menu-1" onclick="void('iOS needs this');">
+    <strong>left click me</strong>
+</div>
+
+
+<%puts @tools.inspect%>
+
+	<%
+	tool_list = current_user.available_tools.where("tools.category <> 'background'")
+
+	if tool_list.present?
+	  grouped_tools = []
+
+	  top_tool_ids = current_user.meta[:top_tool_ids] || []
+	  if !top_tool_ids.empty?
+	    # Define top 5 tools for current users
+	    top_5_tool_ids = Hash[current_user.meta[:top_tool_ids].sort_by { |k,v| -v }[0..5]].keys
+	    top_5_tools    = Tool.where(:id => top_5_tool_ids).map{ |t| [t.select_menu_text, t.id] }
+
+	    # Removed the top 5 to the complete list
+	    tool_list      = tool_list - top_5_tools
+	  end
+
+	  grouped_tools  = tool_list
+	    .group_by(&:category)
+	    .map { |cat, tools| [
+	      cat.pluralize.titleize,
+	      tools
+	        .sort { |t1,t2| t1.name <=> t2.name }
+	        .map  { |t| [t.select_menu_text, t.id] }
+	    ] }
+	    .sort_by(&:first)
+
+	  grouped_tools.unshift([["Most Used Tools"],top_5_tools]) if top_5_tools
+	  puts grouped_tools.inspect
+	end
+	%>
+
+    <div class="userfiles_tool_selector" style="display:none;">
+     <%= ajax_onchange_select(
+           "tool_id",
+           url_for(:controller  => :tools, :action => :tool_config_select),
+           "<option value=\"\">Select a task to launch</option>".html_safe + grouped_options_for_select(grouped_tools),
+           :target  => "#tool_version_selector",
+           :loading_message  => "<span class='warning'>Checking availability...</span>"
+       )
+     %>
+    </div>
+    <div class="userfiles_bourreau_selector" id="tool_version_selector">
+    </div>
+
+
+	<br/><br/>
+
 <b>Type:</b><br/>
 
 <% @tag_tools.each do |tag|%>
@@ -34,11 +89,16 @@
 data-<%= tool_tag.name%> = 'true'
 <%end%>
 >
-<td>
+<td id="<%=tool.id%>">
+	<center>
 <%=
-"<b>#{tool.name}</b><br/>Tags: #{tool.tags.map{ |tag| tag.name }.join(', ')}<br/>".html_safe
+"<b><a 	href=\"javascript:selectTool(\'#{tool.id}\');\">#{tool.name}</a></b><br/>Tags: #{tool.tags.map{ |tag| tag.name }.join(', ')}<br/>".html_safe
 %>
+
+
+
 <%= link_to( "link to URL", tool.url) if !tool.url.nil?%>
+</center>
 </td>
 </tr>
 
@@ -54,6 +114,7 @@ data-<%= tool_tag.name%> = 'true'
 tagArray = [];
 
 $(document).ready(function() {
+
 
 	$(":checkbox").attr("checked",false);
 
@@ -117,6 +178,12 @@ function filterTags(){
 	    return eval(stringToEval); //$(this).data(tag) !== undefined;
 	}).show( "slow" );
 
+}
+
+function selectTool(id){
+
+	$('#tool_id').val(id).change();
+	$("#tool_version_selector").appendTo("#"+id);
 }
 
   </script>
