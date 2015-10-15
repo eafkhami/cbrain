@@ -1,13 +1,5 @@
 <h1>Graphical Tools Interface</h1>
 
-
-<div class="context-menu-one box menu-1" onclick="void('iOS needs this');">
-    <strong>left click me</strong>
-</div>
-
-
-<%puts @tools.inspect%>
-
 	<%
 	tool_list = current_user.available_tools.where("tools.category <> 'background'")
 
@@ -39,7 +31,10 @@
 	end
 	%>
 
+
     <div class="userfiles_tool_selector" style="display:none;">
+ 	   <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
+
      <%= ajax_onchange_select(
            "tool_id",
            url_for(:controller  => :tools, :action => :tool_config_select),
@@ -48,7 +43,11 @@
            :loading_message  => "<span class='warning'>Checking availability...</span>"
        )
      %>
+     <% end %> <!-- form -->
+
     </div>
+
+
     <div class="userfiles_bourreau_selector" id="tool_version_selector">
     </div>
 
