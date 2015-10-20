@@ -33,8 +33,6 @@
   <%= javascript_tag (render :partial => "file_selection.js.erb", :formats => [:js]).to_s %>
 <% end %>
 
-	<a href="#" id="tools">Tools</a>
-
 
 <div id="userfiles_menus_and_filelist">
 
@@ -53,95 +51,6 @@
   <% end %> <!-- form -->
 </div> <!-- cell #1 -->
 
-
-
-    <div id="dialogTools" title="Tools" >
-
-	  <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
-
-		<%
-		tool_list = current_user.available_tools.where("tools.category <> 'background'")
-
-		if tool_list.present?
-		  grouped_tools = []
-
-		  top_tool_ids = current_user.meta[:top_tool_ids] || []
-		  if !top_tool_ids.empty?
-		    # Define top 5 tools for current users
-		    top_5_tool_ids = Hash[current_user.meta[:top_tool_ids].sort_by { |k,v| -v }[0..5]].keys
-		    top_5_tools    = Tool.where(:id => top_5_tool_ids).map{ |t| [t.select_menu_text, t.id] }
-
-		    # Removed the top 5 to the complete list
-		    tool_list      = tool_list - top_5_tools
-		  end
-
-		  grouped_tools  = tool_list
-		    .group_by(&:category)
-		    .map { |cat, tools| [
-		      cat.pluralize.titleize,
-		      tools
-		        .sort { |t1,t2| t1.name <=> t2.name }
-		        .map  { |t| [t.select_menu_text, t.id] }
-		    ] }
-		    .sort_by(&:first)
-
-		  grouped_tools.unshift([["Most Used Tools"],top_5_tools]) if top_5_tools
-		end
-		%>
-
-		<% if grouped_tools.present? %>
-
-		   <div class="userfiles_tool_selector">
-		    <%= ajax_onchange_select(
-		          "tool_id",
-		          url_for(:controller  => :tools, :action => :tool_config_select),
-		          "<option value=\"\">Select a task to launch</option>".html_safe + grouped_options_for_select(grouped_tools),
-		          :target  => "#tool_version_selector2",
-		          :loading_message  => "<span class='warning'>Checking availability...</span>"
-		      )
-		    %>
-		   </div>
-
-		   <br>
-
-		   <div class="userfiles_bourreau_selector" id="tool_version_selector2">
-		   </div>
-
-		<% else %>
-
-		   <br>
-		   <% if current_user.has_role? :admin_user %>
-		       <h1 class="warning">No tools available. New tools may be registered from the Tools index.</h1>
-		   <% else %>
-		       <h1 class="warning">No tools available. Contact your admin to have them registered.</h1>
-		   <% end %>
-		   <br>
-
-		<% end %>
-
-	 <div id="userfiles_display_tools" style="display:none"></div>
-     <% end %> <!-- form -->
-     </div>
-
-
-    </div>
-
-
-<script type="text/javascript">
-
-
- $(document).ready(function() {
-
-
-     $("#dialogTools").dialog({autoOpen : false, modal : false, show : "blind", hide : "blind"});
-
-     $("#tools").click(function() {
-     $("#dialogTools").dialog( "open");
-		 $( "#userfiles_display" ).clone().appendTo("#userfiles_display_tools");
-       return false;
-     });
- });
-
-</script>
-
+<%= render "tools_interface" %>
+<%= render "table_right_click" %>
 

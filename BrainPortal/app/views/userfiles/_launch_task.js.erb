@@ -45,7 +45,7 @@ $(document).delegate('div#tool_version_selector2 > div', 'new_content', function
       ((persistent || userfile_checkboxes.is(':checked')) ? "Launch " : "Prepare ") +
       tool_name
     )
-    .unbind('click.launch_task')
+   // .unbind('click.launch_task')
     .bind('click.launch_task', function (event) {
       /* If we have userfiles selected, we can launch the task right away! */
       if (persistent || userfile_checkboxes.is(':checked')){
@@ -53,17 +53,19 @@ $(document).delegate('div#tool_version_selector2 > div', 'new_content', function
 		  return;
 	  }
 
+	  $("#dialogTools").dialog('close');
+
       event.preventDefault();
 
-      /* Otherwise, hide the menu and show a nice bar to let the user pick files */
-      $(this).closest('.drop_down_menu').hide();
+     // Otherwise, hide the menu and show a nice bar to let the user pick files
+     //$(this).closest('.drop_down_menu').hide();
 
-	  // If the popup is open close it
+	 // If the popup is open close it
 	 // $("#dialogTools").dialog('close');
-	 //$("#dialogTools").hide();
+	 // $("#dialogTools").hide();
 
 
-      /* Remove old launch bars from previous selections */
+      // Remove old launch bars from previous selections
       $('.launch_bar').remove();
 
       $('.menu_bar').after(
@@ -72,13 +74,13 @@ $(document).delegate('div#tool_version_selector2 > div', 'new_content', function
           .append($('<span class="file_status">No files selected</span>'))
           .append(
             $('<button>Launch</button>')
-              .button({ disabled: true }).click(function () { alert("hh"); //menu_button.click();//launch_form.submit();
-
-
+			  //.unbind()
+              .button({ disabled: true }).click(function () { launch_form.submit();
 			  })
 
           )
       );
+
     });
 
   userfile_checkboxes
@@ -89,8 +91,8 @@ $(document).delegate('div#tool_version_selector2 > div', 'new_content', function
       /* Update the button in the menu */
       menu_button.button('option', 'label', (checked ? "Launch " : "Prepare ") + tool_name);
 
-	  $("#userfiles_display_tools").empty();
-	  $( "#userfiles_display" ).clone().appendTo("#userfiles_display_tools");
+	  //$("#userfiles_display_tools").empty();
+	  //$( "#userfiles_display" ).clone().appendTo("#userfiles_display_tools");
 
 
       /* And the launch_bar, if it exists */
