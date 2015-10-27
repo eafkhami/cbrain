@@ -2081,79 +2081,9 @@ img {
   resize: both;
 }
 
-/************* ehsan -- table_right_click ---- *****************/
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-
-.container {
-  margin: 0 auto;
-  padding: 0 24px;
-  max-width: 960px;
-}
-
-/* primary header */
-
-.primary-header {
-  padding: 24px 0;
-  text-align: center;
-  border-bottom: solid 2px #cfcfcf;
-}
-
-.primary-header__title {
-  color: #393939;
-  font-size: 36px;
-}
-
-.primary-header__title small {
-  font-size: 18px;
-  color: #898989;
-}
-
-/* content */
-
-.content {
-  padding: 48px 0;
-  border-bottom: solid 2px #cfcfcf;
-}
-
-.content__footer {
-  margin-top: 12px;
-  text-align: center;
-}
-
-/* footer */
-
-.primary-footer {
-  padding: 24px 0;
-  color: #898989;
-  font-size: 14px;
-  text-align: center;
-}
-
-/* tasks */
-
-.tasks {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.task {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: solid 1px #dfdfdf;
-}
-
-.task:last-child {
-  border-bottom: none;
-}
-
-/* context menu */
+/* % ######################################################### */
+/* % User Files Table Contextmenu styling
+/* % ######################################################### */
 
 .context-menu {
   display: none;
@@ -2199,15 +2129,13 @@ img {
 
 
 
+/*container for tools table-- ehsan*/
 
-
-#menulinks ul
-{
-margin: 0;
-padding: 0;
-list-style-type: none;
+.container{
+    overflow-y:auto;
+    overflow-x:hidden;
+    height:300px;
+    width:400px;
 }
-
-#menulinks ul li { display: inline; }
 
 

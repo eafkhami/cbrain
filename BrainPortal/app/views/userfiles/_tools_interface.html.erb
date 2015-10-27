@@ -82,7 +82,7 @@
 <% @tag_tools.each do |tag|%>
 
 <%if tag.name.downcase == "preprocessing" || tag.name.downcase == "fmri" || tag.name.downcase == "dt1" || tag.name.downcase == "structural" || tag.name.downcase == "genomic"%>
-	<input type="checkbox" class="tag_checkbox" style="margin-left:0px;display:none;" id="<%=tag.name%>"/><a 	href="javascript:tagClick('<%=tag.name%>');"><%= image_tag "#{tag.name.downcase}-off.png", :id => "#{tag.name}-icon"%></a>
+	<%=tag.name.downcase%>: <input type="checkbox" class="tag_checkbox" style="margin-left:0px;" id="<%=tag.name%>"/><br/>
 <% end %>
 
 <% end %>
@@ -92,7 +92,7 @@
 <% @tag_tools.each do |tag|%>
 
 <%if tag.name.downcase == "fsl" || tag.name.downcase == "minc" || tag.name.downcase == "civet" || tag.name.downcase == "niak"%>
-	<input type="checkbox" class="tag_checkbox" style="margin-left:0px;display:none;" id="<%=tag.name%>"/><a 	href="javascript:tagClick('<%=tag.name%>');"><%= image_tag "#{tag.name.downcase}-off.png", :id => "#{tag.name}-icon"%></a>
+	<%=tag.name.downcase%>: <input type="checkbox" class="tag_checkbox" style="margin-left:0px;" id="<%=tag.name%>"/><br/>
 <% end %>
 
 <% end %>
@@ -100,8 +100,8 @@
 <br/><br/>
 <a href="javascript:clearTags();">clear tags</a><br/><br/>
 
-
-<table id="tools" style="width: 360px;">
+<div class="container">
+<table id="tools" style="width: 360px;" style="border:none;">
 
 
 <%@tools1.each do |tool|%>
@@ -126,6 +126,7 @@ data-<%= tool_tag.name%> = 'true'
 
 <%end%>
 </table>
+</div>
 <br/>
 </div>
 

@@ -27,7 +27,7 @@ jQuery("#userfiles_display").html(<%= html_for_js(render(:partial => 'userfiles_
 jQuery("#userfiles_display").trigger("new_content");
 jQuery("#view_option_button").html(<%= html_for_js(render(:partial => 'view_option_button')) %>).trigger("new_content");
 
-
+<%- #this clears the div with user table in it -%>
 $(".userfiles_display_duplicate").empty();
 
 
