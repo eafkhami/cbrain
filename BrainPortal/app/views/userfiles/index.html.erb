@@ -37,7 +37,7 @@
 
 <div id="userfiles_menus_and_filelist">
 
-  <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
+  <%= multi_form_tag(:method => :post, "data-type"  => "script", :id => "userfile_table_form") do %>
 
       <div class="index_block">
         <%= render :partial => "userfiles/file_menu" %>
@@ -46,12 +46,11 @@
           <%= render :partial => 'userfiles_display' %>
         </div>
 
+
         <%  sync_statuses = [ "InSync", "ProvNewer", "CacheNewer", "Corrupted", "ToCache", "ToProvider" ] %>
         <%= center_legend("Synchronization symbols:", sync_statuses.map { |s| [ status_html_symbol(s), s ] } ) %>
       </div>
   <% end %> <!-- form -->
 </div> <!-- cell #1 -->
 
-<%= render "tools_interface" %>
 <%= render "table_right_click" %>
-

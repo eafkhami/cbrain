@@ -2,7 +2,7 @@
 
 $(document).ready(function() {
 
-  $( ".button" ).click(function() {
+  $( ".external_highjacker_submit_button" ).click(function() {
     $(".file-action").dialog('close');
   });
 
@@ -10,11 +10,11 @@ $(document).ready(function() {
   $(".file-action").dialog({autoOpen : false, modal : true, show : "blind", hide : "blind"});
 
   $(".context-menu__link").click(function(){
-    div_id = "dialog-" + this.id;
-    elem = $("#" + div_id).find("div.userfiles_display_duplicate");
-    $("#userfiles_display" ).clone().appendTo(elem);
+    var div_id = "dialog-" + this.id;
+    //var elem = $("#" + div_id).find("div.userfiles_display_duplicate");
+    //$("#userfiles_display" ).clone().appendTo(elem);
     $("#" + div_id).dialog("open");
-    toggleMenuOff();
+
     return false;
   })
 

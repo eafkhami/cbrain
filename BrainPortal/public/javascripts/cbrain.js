@@ -967,8 +967,6 @@
       var submit_value  = button.attr("value");
       var form = $("#" + button.attr('data-associated-form'));
       var confirm_message = button.attr('data-confirm');
-      var hidden_field  = $("<input type=\'hidden\' name=\'"+submit_name+"\' value=\'"+submit_value+"\'>");
-      var submit_button = $("<input type=\'submit\'>");
 
       form.append(hidden_field);
       form.append(submit_button)
@@ -980,6 +978,55 @@
 
       return false;
     });
+
+    $(document).delegate('.external_highjacker_submit_button', 'click', function(e) {
+      var button = $(this);
+      var submit_name   = button.attr("name");
+      var submit_value  = button.attr("value");
+      var form = $("#" + button.attr('data-associated-form'));
+      var confirm_message = button.attr('data-confirm');
+      var target = button.attr("data-target");
+      var ajax_submit = button.attr("data-ajax-submit");
+
+
+      var url = button.attr("data-url");
+      var method = button.attr("data-method");
+      var data = {};
+      var other_options = {};
+
+      //form.attr("action", url);
+      //form.attr("method", method);
+
+      if (ajax_submit !== "false") {
+
+        form.ajaxSubmit({
+          url: url,
+          type: method,
+          success: function(data) {
+            //alert("success");
+            modify_target(data, target, other_options);
+          },
+          beforeSend: function() {
+            loading_image.show();
+          },
+          complete: function() {
+            loading_image.hide();
+          },
+          data: data,
+          resetForm: false
+          }
+        );
+      } else {
+        form.attr("action", url);
+        form.attr("method", method);
+        enclosing_form.submit();
+      }
+
+
+
+      return false;
+    });
+
 
     //For loading content into an element after it is clicked.
     //See on_click_ajax_replace() in application_helper.rb
