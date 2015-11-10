@@ -24,6 +24,13 @@
 
 CbrainRailsPortal::Application.routes.draw do
 
+
+  resources :tool_interface, :only => [:index] do
+    collection do
+       get :save_to_session
+    end
+  end
+
   # Session
   resource  :session do
     member do
@@ -121,8 +128,8 @@ CbrainRailsPortal::Application.routes.draw do
       post   'create_collection'
       put    'update_multiple'
       post   'change_provider'
-      post   'compress'
-      post   'archive_management'
+      post   'enlarge'
+      post   'squeez'
       post   'quality_control'
       post   'quality_control_panel'
       post   'manage_persistent'
@@ -163,6 +170,7 @@ CbrainRailsPortal::Application.routes.draw do
   get   '/session_data'           => 'session_data#show'
   post  '/session_data'           => 'session_data#update'
   get   '/filter_proxy'           => 'application#filter_proxy'
+  get   '/tools_gui'              => 'tool_interface#index'
 
   # Report Maker
   get   "/report",                :controller => :portal, :action => :report

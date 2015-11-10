@@ -18,7 +18,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 -%>
 
@@ -27,3 +27,4 @@ jQuery("#userfiles_display").html(<%= html_for_js(render(:partial => 'userfiles_
 jQuery("#userfiles_display").trigger("new_content");
 jQuery("#view_option_button").html(<%= html_for_js(render(:partial => 'view_option_button')) %>).trigger("new_content");
 jQuery("#userfiles_filters").html(<%= html_for_js(render(:partial => 'filters')) %>).trigger("new_content");
+

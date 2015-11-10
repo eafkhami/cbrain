@@ -237,6 +237,23 @@ module DynamicFormHelper
   #
   # Options:
   # [:confirm] Confirm message to display before sending the request.
+  def external_highjacker_submit_button(name, form_id, options = {})
+    options_setup("external_highjacker_submit_button", options)
+
+    ajax_submit = options.delete(:ajax_submit)
+    unless ajax_submit.nil?
+      options["data-ajax-submit"] = ajax_submit.to_s
+    end
+    options["data-associated-form"] = form_id
+
+    submit_tag(name, options)
+  end
+
+  # A submit button that can be outside the form it submits,
+  # which is defined by +form_id+.
+  #
+  # Options:
+  # [:confirm] Confirm message to display before sending the request.
   def external_submit_button(name, form_id, options = {})
     options_setup("external_submit_button", options)
 

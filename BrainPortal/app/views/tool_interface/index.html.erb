@@ -1,0 +1,194 @@
+<h1>Graphical Tools Interface</h1>
+
+	<%
+	tool_list = current_user.available_tools.where("tools.category <> 'background'")
+
+	if tool_list.present?
+	  grouped_tools = []
+
+	  top_tool_ids = current_user.meta[:top_tool_ids] || []
+	  if !top_tool_ids.empty?
+	    # Define top 5 tools for current users
+	    top_5_tool_ids = Hash[current_user.meta[:top_tool_ids].sort_by { |k,v| -v }[0..5]].keys
+	    top_5_tools    = Tool.where(:id => top_5_tool_ids).map{ |t| [t.select_menu_text, t.id] }
+
+	    # Removed the top 5 to the complete list
+	    tool_list      = tool_list - top_5_tools
+	  end
+
+	  grouped_tools  = tool_list
+	    .group_by(&:category)
+	    .map { |cat, tools| [
+	      cat.pluralize.titleize,
+	      tools
+	        .sort { |t1,t2| t1.name <=> t2.name }
+	        .map  { |t| [t.select_menu_text, t.id] }
+	    ] }
+	    .sort_by(&:first)
+
+	  grouped_tools.unshift([["Most Used Tools"],top_5_tools]) if top_5_tools
+	  puts grouped_tools.inspect
+	end
+	%>
+
+
+    <div class="userfiles_tool_selector" style="display:none;">
+ 	   <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
+
+     <%= ajax_onchange_select(
+           "tool_id",
+           url_for(:controller  => :tools, :action => :tool_config_select),
+           "<option value=\"\">Select a task to launch</option>".html_safe + grouped_options_for_select(grouped_tools),
+           :target  => "#tool_version_selector",
+           :loading_message  => "<span class='warning'>Checking availability...</span>"
+       )
+     %>
+     <% end %> <!-- form -->
+
+    </div>
+
+
+    <div class="userfiles_bourreau_selector" id="tool_version_selector">
+    </div>
+
+
+	<br/><br/>
+
+<b>Type:</b><br/>
+
+<% @tag_tools.each do |tag|%>
+
+<%if tag.name.downcase == "preprocessing" || tag.name.downcase == "fmri" || tag.name.downcase == "dt1" || tag.name.downcase == "structural" || tag.name.downcase == "genomic"%>
+	<input type="checkbox" style="margin-left:0px;display:none;" id="<%=tag.name%>"/><a 	href="javascript:tagClick('<%=tag.name%>');"><%= image_tag "#{tag.name.downcase}-off.png", :id => "#{tag.name}-icon"%></a>
+<% end %>
+
+<% end %>
+
+<br/><br/><b>Sofware Package:</b><br/>
+
+<% @tag_tools.each do |tag|%>
+
+<%if tag.name.downcase == "fsl" || tag.name.downcase == "minc" || tag.name.downcase == "civet" || tag.name.downcase == "niak"%>
+	<input type="checkbox" style="margin-left:0px;display:none;" id="<%=tag.name%>"/><a 	href="javascript:tagClick('<%=tag.name%>');"><%= image_tag "#{tag.name.downcase}-off.png", :id => "#{tag.name}-icon"%></a>
+<% end %>
+
+<% end %>
+
+<br/><br/>
+<a href="javascript:clearTags();">clear tags</a><br/><br/>
+
+
+<table id="tools" style="width: 360px;">
+
+
+<%@tools.each do |tool|%>
+
+<tr
+<%tool.tags.each do |tool_tag|%>
+data-<%= tool_tag.name%> = 'true'
+<%end%>
+>
+<td id="<%=tool.id%>">
+	<center>
+<%=
+"<b><a 	href=\"javascript:selectTool(\'#{tool.id}\');\">#{tool.name}</a></b><br/>Tags: #{tool.tags.map{ |tag| tag.name }.join(', ')}<br/>".html_safe
+%>
+
+
+
+<%= link_to( "link to URL", tool.url) if !tool.url.nil?%>
+</center>
+</td>
+</tr>
+
+<%end%>
+</table>
+<br/>
+
+
+
+<% content_for :head do %>
+  <script type="text/javascript">
+
+tagArray = [];
+
+$(document).ready(function() {
+
+
+	$(":checkbox").attr("checked",false);
+
+	$(":checkbox").change(function() {
+
+		imageId = "#" + $(this).attr('id') + "-icon";
+
+		if ($(this).is(":checked")){
+			tagArray.push($(this).attr('id'));
+			$(imageId).attr("src","/images/" + $(this).attr('id').toLowerCase()+".png");
+		}else{
+			$(imageId).attr("src","/images/" + $(this).attr('id').toLowerCase()+"-off.png")
+			var index = tagArray.indexOf($(this).attr('id'));
+			if (index > -1) {
+			    tagArray.splice(index, 1);
+			}
+
+		}
+		filterTags();
+	});
+
+
+
+});
+
+
+function clearTags(){
+	$(":checkbox").each(function() {
+	  if ($(this).is(":checked")){
+	  	 $(this).trigger( "click" );
+	  }
+	});
+}
+
+function tagClick(tagId){
+	$("#"+tagId).trigger( "click" );
+}
+
+
+function filterTags(){
+
+	var stringToEval = "";
+	var arrayLength = tagArray.length;
+	for (var i = 0; i < arrayLength; i++) {
+		if (i+1 == arrayLength){
+		    stringToEval = stringToEval + "$(this).data(\"" + tagArray[i].toLowerCase() + "\") !== undefined";
+		}else{
+			stringToEval = stringToEval + "$(this).data(\"" + tagArray[i].toLowerCase() + "\") !== undefined && ";
+		}
+	}
+
+	if (arrayLength == 0){
+		$('#tools tr').show( "slow" );
+	}else{
+		$('#tools tr').hide();
+	}
+
+
+
+	$('#tools tr').filter(function() {
+	    return eval(stringToEval); //$(this).data(tag) !== undefined;
+	}).show( "slow" );
+
+}
+
+function selectTool(id){
+
+	$('#tool_id').val(id).change();
+	$("#tool_version_selector").appendTo("#"+id);
+}
+
+  </script>
+<% end %>
+
+
+
+
+
