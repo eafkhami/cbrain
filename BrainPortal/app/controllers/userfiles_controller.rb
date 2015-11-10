@@ -142,7 +142,7 @@ class UserfilesController < ApplicationController
     @tag_tools = Tag.where(:id => @tag_tools)
     ##
 
-    current_session.save_preferences_for_user(current_user, :userfiles, :view_hidden, :tree_sort, :view_all, :details, :per_page)
+    #current_session.save_preferences_for_user(current_user, :userfiles, :view_hidden, :tree_sort, :view_all, :details, :per_page)
     ######################################
 
     respond_to do |format|
