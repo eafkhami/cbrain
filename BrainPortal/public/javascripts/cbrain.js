@@ -984,26 +984,28 @@
       var submit_name   = button.attr("name");
       var submit_value  = button.attr("value");
       var form = $("#" + button.attr('data-associated-form'));
+      var data_type = button.attr("data-type");
       var confirm_message = button.attr('data-confirm');
       var target = button.attr("data-target");
       var ajax_submit = button.attr("data-ajax-submit");
-
-
       var url = button.attr("data-url");
       var method = button.attr("data-method");
       var data = {};
       var other_options = {};
 
-      //form.attr("action", url);
-      //form.attr("method", method);
+      data_type = data_type || form.attr("data-type") || "html";
+      url = url || form.attr("action");
+      method = method || form.attr("data-method") || "POST";
+
+      data[submit_name] = submit_value;
 
       if (ajax_submit !== "false") {
 
         form.ajaxSubmit({
           url: url,
           type: method,
+          dataType: data_type,
           success: function(data) {
-            //alert("success");
             modify_target(data, target, other_options);
           },
           beforeSend: function() {
@@ -1021,8 +1023,6 @@
         form.attr("method", method);
         enclosing_form.submit();
       }
-
-
 
       return false;
     });

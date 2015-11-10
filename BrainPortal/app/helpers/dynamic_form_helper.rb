@@ -240,6 +240,10 @@ module DynamicFormHelper
   def external_highjacker_submit_button(name, form_id, options = {})
     options_setup("external_highjacker_submit_button", options)
 
+    ajax_submit = options.delete(:ajax_submit)
+    unless ajax_submit.nil?
+      options["data-ajax-submit"] = ajax_submit.to_s
+    end
     options["data-associated-form"] = form_id
 
     submit_tag(name, options)

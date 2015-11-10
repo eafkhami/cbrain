@@ -6,18 +6,16 @@
       <a href="#" id="move" class="context-menu__link">Move</a>
       <div id="dialog-move" title="Move" class="file-action">
 
-       <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
-          <% writable_dps = DataProvider.find_all_accessible_by_user(current_user).all.select { |dp| ! dp.read_only? } %>
-          To Data Provider:
-          <%= data_provider_select(:data_provider_id_for_mv_cp, { :data_providers => writable_dps },
-          :include_blank => "(Select Destination)") %><br/>
-          <!-- jQuery has a bug for the following checkbox, which explains the style attribute.-->
-          Overwrite files on Destination:
-          <input type="checkbox" name="crush_destination" value="crush" style="position: relative; left: 0;"><br/>
-          <%= hijacker_submit_button("Move Files", :name => :move, :url  => url_for(:action  => :change_provider), :class => "button",
-          :method  => :post) %>
-          <div class="userfiles_display_duplicate" style="display:none"></div>
-        <% end %>
+        <% writable_dps = DataProvider.find_all_accessible_by_user(current_user).all.select { |dp| ! dp.read_only? } %>
+        To Data Provider:
+        <%= data_provider_select(:data_provider_id_for_mv_cp, { :data_providers => writable_dps },
+        :include_blank => "(Select Destination)") %><br/>
+        <!-- jQuery has a bug for the following checkbox, which explains the style attribute. -->
+        Overwrite files on Destination:
+        <input type="checkbox" name="crush_destination" value="crush" style="position: relative; left: 0;"><br/>
+        <%= external_highjacker_submit_button("Move Files", "userfile_table_form", :name => :move, :url => url_for(:action  => :change_provider),
+              :class     => "button",
+              :method  => :post) %>
 
       </div>
 
@@ -34,16 +32,6 @@
           :class     => "button",
           :method  => :delete) %>
 
- <!--       <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
-          For any type:
-          <%= hijacker_submit_button("Delete", :url     => url_for(:action  => :delete_files),
-          :confirm => "Are you sure you want to delete the selected files?",
-          :class     => "button",
-          :method  => :delete)
-          %>
-          <div class="userfiles_display_duplicate" style="display:none"></div>
-        <% end %> <!-- form -->
-
       </div>
     </li>
 
@@ -51,18 +39,16 @@
       <a href="#" id="copy" class="context-menu__link" > Copy</a>
       <div id="dialog-copy" title="Copy" class="file-action">
 
-        <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
         <% writable_dps = DataProvider.find_all_accessible_by_user(current_user).all.select { |dp| ! dp.read_only? } %>
         To Data Provider:
         <%= data_provider_select(:data_provider_id_for_mv_cp, { :data_providers => writable_dps },
         :include_blank => "(Select Destination)") %><br/>
-        <!-- jQuery has a bug for the following checkbox, which explains the style attribute. -->
+        <!-- jQuery has a bug for the following checkbox, which explains the style attribute.-->
         Overwrite files on Destination:
         <input type="checkbox" name="crush_destination" value="crush" style="position: relative; left: 0;"><br/>
-        <%= hijacker_submit_button("Copy Files", :name => :copy, :url  => url_for(:action  => :change_provider),
-        :class => "button", :method  => :post) %>
-        <div class="userfiles_display_duplicate" style="display:none"></div>
-        <% end %> <!-- form -->
+        <%= external_highjacker_submit_button("Copy Files", "userfile_table_form", :name => :copy, :url => url_for(:action  => :change_provider),
+              :class     => "button",
+              :method  => :post) %>
 
       </div>
     </li>
@@ -71,13 +57,11 @@
       <a href="#" id="download" class="context-menu__link" > Download</a>
       <div id="dialog-download" title="Download" class="file-action">
 
-        <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
         Specify Download File Name (optional):
         <%= text_field_tag :specified_filename %>
-        <%= hijacker_submit_button("Download Files", :url  => url_for(:controller => 'userfiles', :action => 'download'),
+        <%= external_highjacker_submit_button("Download Files", "userfile_table_form", :url  => url_for(:controller => 'userfiles', :action => 'download'),
         :ajax_submit  => false, :class => "button", :method  => :get) %>
-        <div class="userfiles_display_duplicate" style="display:none"></div>
-        <% end %> <!-- form -->
+
 
       </div>
     </li>
@@ -86,7 +70,7 @@
       <a href="#" id="collection" class="context-menu__link" > Create Collection</a>
       <div id="dialog-collection" title="Collection" class="file-action">
 
-        <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
+
         <% writable_dps = DataProvider.find_all_accessible_by_user(current_user).all.select { |dp| ! dp.read_only? } %>
 
         Name for the collection (optional):
@@ -94,84 +78,42 @@
         To Data Provider:
         <%= data_provider_select(:data_provider_id_for_collection, { :data_providers => writable_dps },
         :include_blank => "(Select Destination)") %>
-        <%= hijacker_submit_button("Create Collection", :url    => url_for(:action  => :create_collection),
-        :class  => "button",
-        :method => :post)
-        %>
-        <div class="userfiles_display_duplicate" style="display:none"></div>
-        <% end %> <!-- form -->
+        <%= external_highjacker_submit_button("Create Collection", "userfile_table_form", :url => url_for(:action  => :create_collection),
+              :class     => "button",
+              :method  => :post) %>
 
       </div>
     </li>
 
     <li class="context-menu__item">
-      <a href="#" id="compress" class="context-menu__link" > Compress</a>
+      <a href="#" id="compress" class="context-menu__link" > Squeez</a>
       <div id="dialog-compress" title="Compress" class="file-action">
 
-        <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
-        For file(s):
-        <%= hijacker_submit_button("Compress",  :url     => url_for(:action  => :compress ),
-        :confirm => "Are you sure you want to compress or uncompress the selected files?",
-        :class   => "button",
-        :method  => :post)
-        %>
-        <div class="userfiles_display_duplicate" style="display:none"></div>
-        <% end %> <!-- form -->
+         For file(s):
+        <%= external_highjacker_submit_button("Compresss or Archive", "userfile_table_form", :url => url_for(:action  => :squeez),
+              :confirm => "Are you sure you want to compress the selected files?",
+              :class     => "button",
+              :method  => :post) %>
 
       </div>
     </li>
 
     <li class="context-menu__item">
-      <a href="#" id="uncompress" class="context-menu__link" > Uncompress</a>
+      <a href="#" id="uncompress" class="context-menu__link" > Enlarge</a>
       <div id="dialog-uncompress" title="Uncompress" class="file-action">
 
-        <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
+
+
         For file(s):
-        <%= hijacker_submit_button("Uncompress",  :url     => url_for(:action  => :compress ),
-        :confirm => "Are you sure you want to compress or uncompress the selected files?",
+        <%= external_highjacker_submit_button("Uncompresss or Unarchive",  "userfile_table_form", :url     => url_for(:action  => :enlarge),
+        :confirm => "Are you sure you want to uncompress the selected files?",
         :class   => "button",
         :method  => :post)
         %>
-        <div class="userfiles_display_duplicate" style="display:none"></div>
-        <% end %> <!-- form -->
+
 
       </div>
     </li>
-
-    <li class="context-menu__item">
-      <a href="#" id="archive" class="context-menu__link" > Archive</a>
-      <div id="dialog-archive" title="Archive" class="file-action">
-
-        <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
-        For collection(s) and archive(s):
-        <%= hijacker_submit_button("Archive",   :url     => url_for(:action  => :archive_management ),
-        :confirm => "Are you sure you want to archive or unarchive the selected files collection?",
-        :class   => "button",
-        :method  => :post)
-        %>
-        <div class="userfiles_display_duplicate" style="display:none"></div>
-        <% end %> <!-- form -->
-
-      </div>
-    </li>
-
-    <li class="context-menu__item">
-      <a href="#" id="unarchive" class="context-menu__link" > Unarchive</a>
-      <div id="dialog-unarchive" title="Unarchive" class="file-action">
-
-        <%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
-        For collection(s) and archive(s):
-        <%= hijacker_submit_button("Unarchive",   :url     => url_for(:action  => :archive_management ),
-        :confirm => "Are you sure you want to archive or unarchive the selected files collection?",
-        :class   => "button",
-        :method  => :post)
-        %>
-        <div class="userfiles_display_duplicate" style="display:none"></div>
-        <% end %> <!-- form -->
-
-      </div>
-    </li>
-
 
   </ul>
 
