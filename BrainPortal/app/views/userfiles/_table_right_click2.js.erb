@@ -2,22 +2,10 @@
 
   $(document).ready(function() {
 
-    var div_id="";
-
-    $( ".external_highjacker_submit_button" ).click(function() {
-      var form = $("#userfile_table_form");
-      $("#" + div_id).appendTo(form);
-      $(".file-action").dialog('close');
-    });
-
-
-    $(".file-action").dialog({autoOpen : false, modal : true, show : "blind", hide : "blind", close : function(){toggleMenuOff();}
-  });
-
-
     $(".context-menu__link").click(function(){
-      div_id = "dialog-" + this.id;
-      $("#" + div_id).dialog("open");
+
+      alert(this.id);
+      toggleMenuOff();
 
       return false;
     })

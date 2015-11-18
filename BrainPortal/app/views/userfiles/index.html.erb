@@ -31,7 +31,8 @@
 <% content_for :scripts do %>
   <%= javascript_tag (render :partial => "launch_task.js.erb",    :formats => [:js]).to_s %>
   <%= javascript_tag (render :partial => "file_selection.js.erb", :formats => [:js]).to_s %>
-  <%= javascript_tag (render :partial => "table_right_click.js.erb", :formats => [:js]).to_s %>
+  <%= javascript_tag (render :partial => "table_right_click2.js.erb", :formats => [:js]).to_s %>
+  <%= javascript_tag (render :partial => "tools_interface.js.erb", :formats => [:js]).to_s %>
 <% end %>
 
 
@@ -53,4 +54,6 @@
   <% end %> <!-- form -->
 </div> <!-- cell #1 -->
 
-<%= render "table_right_click" %>
+<%= render "table_right_click2" %>
+<%= render "tool_selection" %>
+

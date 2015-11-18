@@ -5,8 +5,6 @@
 
     <div class="userfiles_tool_selector" id="all_form">
 
-	<%= multi_form_tag(:method => :post, "data-type"  => "script") do %>
-
 	<%
 	tool_list = current_user.available_tools.where("tools.category <> 'background'")
 
@@ -67,9 +65,7 @@
 
 		<% end %>
 
-		<div id="userfiles_display_tools" style="display:none"></div>
-		<% end %> <!-- form -->
-    </div>
+  </div>
 
 
 
@@ -100,7 +96,7 @@
 <br/><br/>
 <a href="javascript:clearTags();">clear tags</a><br/><br/>
 
-<div class="container">
+<div class="tools-container">
 <table id="tools" style="width: 360px;" style="border:none;">
 
 
@@ -146,7 +142,6 @@ $(document).ready(function() {
 
  $("#tools").click(function() {
  $("#dialogTools").dialog( "open");
-	 $( "#userfiles_display" ).clone().appendTo("#userfiles_display_tools");
    return false;
  });
 

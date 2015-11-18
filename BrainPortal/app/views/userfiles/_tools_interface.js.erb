@@ -1,0 +1,124 @@
+$(document).ready(function() {
+
+  var tagArray = [];
+
+  $("#dialogTools").dialog({autoOpen : false, modal : true, show : "blind", hide : "blind", width: 600,
+    height: 525});
+
+  $("#tools").click(function() {
+    $(".tag_checkbox").removeAttr('checked');
+
+    $("#AllTools").attr('checked', true);
+
+    $('#tool_version_selector').html("");
+
+    $("#dialogTools").dialog( "open");
+    return false;
+  });
+
+  $("#clearTags").click(function() {
+  	$(".tag_checkbox").attr("checked",false);
+    tagArray = [];
+
+    $('#tools tr').show();
+    $("#AllTools").attr('checked', true);
+
+    $('#tool_version_selector').html("");
+    $("#searchToolBox").val("")
+
+
+    return false;
+  });
+
+
+  $("#searchToolBox").keyup(function(){
+
+    if($(this).val().length == 1){
+    	$(".tag_checkbox").attr("checked",false);
+      tagArray = [];
+      $("#AllTools").attr('checked', false);
+    }else if($(this).val().length == 0){
+      $("#AllTools").attr('checked', true);
+    }
+
+    var startsWith = new RegExp("^" + $(this).val(), "i");
+
+    $('#tools tr').hide();
+  	$('#tools tr').filter(function() {
+      return startsWith.test($(this).find('.tools').text());
+  	}).show( "slow" );
+
+  });
+
+
+	$(".tag_checkbox").change(function() {
+
+		if ($(this).is(":checked")){
+
+      // If show all tools checkbox is clicked
+      if(this.id == "AllTools"){
+        // Uncheck all other tags, set tag array to empty and show all tools
+        $(".tag_checkbox").not( "#AllTools" ).attr("checked",false);
+        tagArray = [];
+        $('#tools tr').show();
+        return;
+      }else{ // If any other checkbox is checked turn all tools checkbox off
+        $("#AllTools").attr('checked', false);
+      }
+
+      tagArray.push($(this).attr('id'));
+
+		}else{
+			var index = tagArray.indexOf($(this).attr('id'));
+			if (index > -1) {
+			    tagArray.splice(index, 1);
+			}
+
+		}
+
+  	var stringToEval = "";
+  	var arrayLength = tagArray.length;
+  	for (var i = 0; i < arrayLength; i++) {
+  		if (i+1 == arrayLength){
+  		    stringToEval = stringToEval + "$(this).data(\"" + tagArray[i].toLowerCase() + "\") !== undefined";
+  		}else{
+  			stringToEval = stringToEval + "$(this).data(\"" + tagArray[i].toLowerCase() + "\") !== undefined || ";
+  		}
+  	}
+
+    $('#tools tr').hide();
+
+  	$('#tools tr').filter(function() {
+  	    return eval(stringToEval);
+  	}).show( "slow" );
+
+
+	});
+
+
+});
+
+
+$(document).delegate('.tools', 'click', function(e) {
+
+  var userfile_checkboxes = $("input[name='file_ids[]']"),
+      persistent          = /persistent/.test($('.pagination blink span').text()),
+      buttonLabel = (persistent || userfile_checkboxes.is(':checked')) ? "Launch " : "Prepare ";
+
+
+  $.ajax({
+       type: "GET",
+       url: "/tools/tool_config_select?button_label=" + buttonLabel,
+       data : "tool_id=" + $(this).attr("id"),
+       dataType: "html",
+       success: function (data) {
+         $("#tool_version_selector").html(data)
+       }
+  });
+
+	$("#tool_selection_div").appendTo("#" + $(this).attr("id"));
+  return false;
+
+});
+
+

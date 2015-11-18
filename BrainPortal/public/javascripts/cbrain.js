@@ -1023,7 +1023,7 @@
       } else {
         form.attr("action", url);
         form.attr("method", method);
-        enclosing_form.submit();
+        form.submit();
       }
 
       return false;

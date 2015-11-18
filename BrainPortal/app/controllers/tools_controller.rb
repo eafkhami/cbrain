@@ -50,6 +50,7 @@ class ToolsController < ApplicationController
       return
     end
 
+    @button_label = params[:button_label]
     tool_id       = params[:tool_id]
     @tool         = current_user.available_tools.find(tool_id)
 

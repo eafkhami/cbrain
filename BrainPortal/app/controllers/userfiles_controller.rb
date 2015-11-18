@@ -133,16 +133,9 @@ class UserfilesController < ApplicationController
     current_session.save_preferences
 
 
-    ##for tools_interface -- Ehsan
-    #@header_scope1   = current_user.available_tools
-    #@filtered_scope1 = base_filtered_scope(@header_scope1.includes(:user, :group))
-    @tools1          = current_user.available_tools#base_sorted_scope @filtered_scope1
-
-    @tag_tools = TagTool.select(:tag_id).map(&:tag_id).uniq
-    @tag_tools = Tag.where(:id => @tag_tools)
-    ##
-
-    #current_session.save_preferences_for_user(current_user, :userfiles, :view_hidden, :tree_sort, :view_all, :details, :per_page)
+    # This is for the tool selection dialog box.... we need the tools the user has access to and tags associated with the tools
+    @tools_to_pick    = current_user.available_tools.where("tools.category <> 'background'")
+    @tool_tags = Tag.where(:id => TagTool.select(:tag_id).map(&:tag_id).uniq)
     ######################################
 
     respond_to do |format|

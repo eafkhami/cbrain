@@ -1,4 +1,3 @@
-
 <%-
 #
 # CBRAIN Project
@@ -22,50 +21,36 @@
 #
 -%>
 
-$(document).delegate('div#tool_version_selector2 > div', 'new_content', function (event) {
+$(document).delegate('div#tool_version_selector > div', 'new_content', function (event) {
   "use strict";
-
-  /* Only trigger when the main div is loaded */
-  if (event.target != this) return;
 
   var userfile_checkboxes = $("input[name='file_ids[]']"),
       menu_button         = $(this).find('input.launch_tool'),
-      launch_form         = menu_button.closest('form'),
+      launch_form         = $("#userfile_table_form"),
       url                 = menu_button.attr('data-url'),
       method              = menu_button.attr('data-method'),
       tool_name           = launch_form.find('select#tool_id option:selected').text().replace("Launch ", ""),
-      persistent          = parseInt($('.psel-count').text()) > 0;
+      persistent          = /persistent/.test($('.pagination blink span').text());
 
   /* If theres URL & method attributes on menu_button, use them instead of the form's */
   if (url)    launch_form.attr('action', url);
   if (method) launch_form.attr('method', method);
 
   menu_button
-    .button('option', 'label',
-      ((persistent || userfile_checkboxes.is(':checked')) ? "Launch " : "Prepare ") +
-      tool_name
-    )
-   // .unbind('click.launch_task')
+    .unbind('click.launch_task')
     .bind('click.launch_task', function (event) {
-      /* If we have userfiles selected, we can launch the task right away! */
-      if (persistent || userfile_checkboxes.is(':checked')){
-		  $("#dialogTools").dialog('close');
-		  return;
-	  }
 
-	  $("#dialogTools").dialog('close');
+      // This was added to handle the popup dialog
+      $("#tool_selection_div").appendTo(launch_form);
+      $("#dialogTools").dialog( "close");
+
+      /* If we have userfiles selected, we can launch the task right away! */
+      if (persistent || userfile_checkboxes.is(':checked')) return;
+
 
       event.preventDefault();
 
-     // Otherwise, hide the menu and show a nice bar to let the user pick files
-     //$(this).closest('.drop_down_menu').hide();
-
-	 // If the popup is open close it
-	 // $("#dialogTools").dialog('close');
-	 // $("#dialogTools").hide();
-
-
-      // Remove old launch bars from previous selections
+      /* Remove old launch bars from previous selections */
       $('.launch_bar').remove();
 
       $('.menu_bar').after(
@@ -74,13 +59,10 @@ $(document).delegate('div#tool_version_selector2 > div', 'new_content', function
           .append($('<span class="file_status">No files selected</span>'))
           .append(
             $('<button>Launch</button>')
-			  //.unbind()
-              .button({ disabled: true }).click(function () { launch_form.submit();
-			  })
-
+              .button({ disabled: true })
+              .click(function () { launch_form.submit() })
           )
       );
-
     });
 
   userfile_checkboxes
@@ -91,12 +73,9 @@ $(document).delegate('div#tool_version_selector2 > div', 'new_content', function
       /* Update the button in the menu */
       menu_button.button('option', 'label', (checked ? "Launch " : "Prepare ") + tool_name);
 
-	  //$("#userfiles_display_tools").empty();
-	  //$( "#userfiles_display" ).clone().appendTo("#userfiles_display_tools");
-
-
       /* And the launch_bar, if it exists */
       $('.launch_bar span.file_status').text(checked ? "Launch with " + checked + " file(s)" : "No files selected");
       $('.launch_bar button').button(checked ? "enable" : "disable");
     });
 });
+

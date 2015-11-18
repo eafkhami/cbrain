@@ -2405,7 +2405,7 @@ img {
   padding: 12px 0;
   width: 240px;
   background-color: #fff;
-  border: solid 1px #dfdfdf;
+  border: solid 1px #dddddd;
   box-shadow: 1px 1px 2px #cfcfcf;
 }
 
@@ -2431,24 +2431,24 @@ img {
 .context-menu__link {
   display: block;
   padding: 4px 12px;
-  color: #0066aa;
   text-decoration: none;
 }
 
 .context-menu__link:hover {
   color: #fff;
-  background-color: #0066aa;
+  background-color: #137deb;
 }
 
 
 
 /*container for tools table-- ehsan*/
 
-.container{
+.tools-container{
     overflow-y:auto;
     overflow-x:hidden;
-    height:300px;
+    height:400px;
     width:400px;
+    border: 1px solid grey;
 }
 
 
