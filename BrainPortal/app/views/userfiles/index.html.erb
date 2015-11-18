@@ -47,7 +47,6 @@
           <%= render :partial => 'userfiles_display' %>
         </div>
 
-
         <%  sync_statuses = [ "InSync", "ProvNewer", "CacheNewer", "Corrupted", "ToCache", "ToProvider" ] %>
         <%= center_legend("Synchronization symbols:", sync_statuses.map { |s| [ status_html_symbol(s), s ] } ) %>
       </div>
@@ -55,5 +54,5 @@
 </div> <!-- cell #1 -->
 
 <%= render "table_right_click2" %>
-<%= render "tool_selection" %>
+<%= render "tools_interface" %>
 

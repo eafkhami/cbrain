@@ -102,7 +102,7 @@ $(document).ready(function() {
 $(document).delegate('.tools', 'click', function(e) {
 
   var userfile_checkboxes = $("input[name='file_ids[]']"),
-      persistent          = /persistent/.test($('.pagination blink span').text()),
+      persistent          = parseInt($('.psel-count').text()) > 0,
       buttonLabel = (persistent || userfile_checkboxes.is(':checked')) ? "Launch " : "Prepare ";
 
 

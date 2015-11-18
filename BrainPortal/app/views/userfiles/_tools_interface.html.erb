@@ -1,234 +1,116 @@
-<div id="dialogTools" title="Tools" >
-<h1>Graphical Tools Interface</h1>
 
+<%-
+  #
+  # CBRAIN Project
+  #
+  # Copyright (C) 2008-2012
+  # The Royal Institution for the Advancement of Learning
+  # McGill University
+  #
+  # This program is free software: you can redistribute it and/or modify
+  # it under the terms of the GNU General Public License as published by
+  # the Free Software Foundation, either version 3 of the License, or
+  # (at your option) any later version.
+  #
+  # This program is distributed in the hope that it will be useful,
+  # but WITHOUT ANY WARRANTY; without even the implied warranty of
+  # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  # GNU General Public License for more details.
+  #
+  # You should have received a copy of the GNU General Public License
+  # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  #
+  -%>
 
+  <div id="dialogTools" title="Select a Tool" >
 
-    <div class="userfiles_tool_selector" id="all_form">
-
-	<%
-	tool_list = current_user.available_tools.where("tools.category <> 'background'")
-
-	if tool_list.present?
-		grouped_tools = []
-
-		top_tool_ids = current_user.meta[:top_tool_ids] || []
-		if !top_tool_ids.empty?
-			# Define top 5 tools for current users
-			top_5_tool_ids = Hash[current_user.meta[:top_tool_ids].sort_by { |k,v| -v }[0..5]].keys
-			top_5_tools    = Tool.where(:id => top_5_tool_ids).map{ |t| [t.select_menu_text, t.id] }
-
-			# Removed the top 5 to the complete list
-			tool_list      = tool_list - top_5_tools
-		end
-
-		grouped_tools  = tool_list
-		.group_by(&:category)
-		.map { |cat, tools| [
-			cat.pluralize.titleize,
-			tools
-			.sort { |t1,t2| t1.name <=> t2.name }
-			.map  { |t| [t.select_menu_text, t.id] }
-			] }
-			.sort_by(&:first)
-
-			grouped_tools.unshift([["Most Used Tools"],top_5_tools]) if top_5_tools
-		end
-		%>
-
-		<% if grouped_tools.present? %>
-
-		<div class="userfiles_tool_selector">
-			<%= ajax_onchange_select(
-			"tool_id",
-			url_for(:controller  => :tools, :action => :tool_config_select),
-			"<option value=\"\">Select a task to launch</option>".html_safe + grouped_options_for_select(grouped_tools),
-			:target  => "#tool_version_selector2",
-			:loading_message  => "<span class='warning'>Checking availability...</span>"
-			)
-			%>
-		</div>
-
-		<br>
-
-		<div class="userfiles_bourreau_selector" id="tool_version_selector2">
-		</div>
-
-		<% else %>
-
-		<br>
-		<% if current_user.has_role? :admin_user %>
-		<h1 class="warning">No tools available. New tools may be registered from the Tools index.</h1>
-		<% else %>
-		<h1 class="warning">No tools available. Contact your admin to have them registered.</h1>
-		<% end %>
-		<br>
-
-		<% end %>
-
+  <div id="tool_selection_div" >
+    <div class="userfiles_bourreau_selector" id="tool_version_selector">
+    </div>
   </div>
+  <br/>
 
 
 
+  <table style="width: 100%; border:none; text-align: left;  vertical-align: text-top;">
+    <tr>
+
+      <td style="border:none; text-align: left; vertical-align: text-top;">
+
+        Search: <input type="text" id="searchToolBox"><br/><br/>
+
+        All tools: <input type="checkbox" class="tag_checkbox" style="margin-left:0px;" id="AllTools"/><br/><br/>
+
+        <b>Type:</b><br/>
+
+        <% @tool_tags.each do |tag|%>
+
+        <%if tag.name.downcase == "preprocessing" || tag.name.downcase == "fmri" || tag.name.downcase == "dt1" || tag.name.downcase == "structural" || tag.name.downcase == "genomic"%>
+        <%=tag.name.downcase%>: <input type="checkbox" class="tag_checkbox" style="margin-left:0px;" id="<%=tag.name%>"/><br/>
+        <% end %>
+
+        <% end %>
+
+        <br/><b>Sofware Package:</b><br/>
+
+        <% @tool_tags.each do |tag|%>
+
+        <%if tag.name.downcase == "fsl" || tag.name.downcase == "minc" || tag.name.downcase == "civet" || tag.name.downcase == "niak"%>
+        <%=tag.name.downcase%>: <input type="checkbox" class="tag_checkbox" style="margin-left:0px;" id="<%=tag.name%>"/><br/>
+        <% end %>
+
+        <% end %>
+
+        <br/><a id="clearTags" href="#">clear selection</a>
+
+      </td>
+
+      <td style="width: 400px; border:none; text-align: left;">
+        <b>Tools:</b>
+        <div class="tools-container">
+          <table id="tools" style="width: 400px; border:none;">
+
+            <% if @tools_to_pick.present? %>
+
+            <%@tools_to_pick.each do |tool|%>
+
+            <tr
+            <%tool.tags.each do |tool_tag|%>
+            data-<%= tool_tag.name %> = 'true'
+            <%end%>
+            >
+            <td id="<%= tool.id %>">
+
+              <%=
+              "<b><a href= '#' id=\"#{tool.id}\" class='tools'>#{tool.name}</a></b><br/>Tags: #{tool.tags.map{ |tag| tag.name }.join(', ')}<br/>".html_safe
+              %>
 
 
-	<br/><br/>
 
-<b>Type:</b><br/>
+              <%= link_to( "link to URL", tool.url) if !tool.url.nil?%>
 
-<% @tag_tools.each do |tag|%>
+            </td>
+          </tr>
 
-<%if tag.name.downcase == "preprocessing" || tag.name.downcase == "fmri" || tag.name.downcase == "dt1" || tag.name.downcase == "structural" || tag.name.downcase == "genomic"%>
-	<%=tag.name.downcase%>: <input type="checkbox" class="tag_checkbox" style="margin-left:0px;" id="<%=tag.name%>"/><br/>
-<% end %>
+          <%end%>
+          <% else %>
 
-<% end %>
+          <tr><td>
+            <% if current_user.has_role? :admin_user %>
+            <h1 class="warning">No tools available. New tools may be registered from the Tools index.</h1>
+            <% else %>
+            <h1 class="warning">No tools available. Contact your admin to have them registered.</h1>
+            <% end %>
+          </tr></td>
 
-<br/><br/><b>Sofware Package:</b><br/>
+          <% end %>
 
-<% @tag_tools.each do |tag|%>
+        </table>
+      </div>
 
-<%if tag.name.downcase == "fsl" || tag.name.downcase == "minc" || tag.name.downcase == "civet" || tag.name.downcase == "niak"%>
-	<%=tag.name.downcase%>: <input type="checkbox" class="tag_checkbox" style="margin-left:0px;" id="<%=tag.name%>"/><br/>
-<% end %>
+    </td>
 
-<% end %>
-
-<br/><br/>
-<a href="javascript:clearTags();">clear tags</a><br/><br/>
-
-<div class="tools-container">
-<table id="tools" style="width: 360px;" style="border:none;">
-
-
-<%@tools1.each do |tool|%>
-
-<tr
-<%tool.tags.each do |tool_tag|%>
-data-<%= tool_tag.name%> = 'true'
-<%end%>
->
-<td id="<%=tool.id%>">
-	<center>
-<%=
-"<b><a 	href=\"javascript:selectTool(\'#{tool.id}\');\">#{tool.name}</a></b><br/>Tags: #{tool.tags.map{ |tag| tag.name }.join(', ')}<br/>".html_safe
-%>
-
-
-
-<%= link_to( "link to URL", tool.url) if !tool.url.nil?%>
-</center>
-</td>
-</tr>
-
-<%end%>
+  </tr>
 </table>
+
 </div>
-<br/>
-</div>
-
-
-
-<% content_for :head do %>
-  <script type="text/javascript">
-
-tagArray = [];
-
-$(document).ready(function() {
-
-	$("#tools").unbind();
-
- $("#dialogTools").dialog({autoOpen : false, modal : false, show : "blind", hide : "blind",  width: 600,
-    height: 800});
-
- $("#tools").click(function() {
- $("#dialogTools").dialog( "open");
-   return false;
- });
-
-
-	$(".tag_heckbox").attr("checked",false);
-
-	$(".tag_checkbox").change(function() {
-
-		imageId = "#" + $(this).attr('id') + "-icon";
-
-		if ($(this).is(":checked")){
-			tagArray.push($(this).attr('id'));
-			$(imageId).attr("src","/images/" + $(this).attr('id').toLowerCase()+".png");
-		}else{
-			$(imageId).attr("src","/images/" + $(this).attr('id').toLowerCase()+"-off.png")
-			var index = tagArray.indexOf($(this).attr('id'));
-			if (index > -1) {
-			    tagArray.splice(index, 1);
-			}
-
-		}
-		filterTags();
-	});
-
-
-
-});
-
-
-function clearTags(){
-	$(":checkbox").each(function() {
-	  if ($(this).is(":checked")){
-	  	 $(this).trigger( "click" );
-	  }
-	});
-}
-
-function tagClick(tagId){
-	$("#"+tagId).trigger( "click" );
-}
-
-
-function filterTags(){
-
-	var stringToEval = "";
-	var arrayLength = tagArray.length;
-	for (var i = 0; i < arrayLength; i++) {
-		if (i+1 == arrayLength){
-		    stringToEval = stringToEval + "$(this).data(\"" + tagArray[i].toLowerCase() + "\") !== undefined";
-		}else{
-			stringToEval = stringToEval + "$(this).data(\"" + tagArray[i].toLowerCase() + "\") !== undefined && ";
-		}
-	}
-
-	if (arrayLength == 0){
-		$('#tools tr').show( "slow" );
-	}else{
-		$('#tools tr').hide();
-	}
-
-
-
-	$('#tools tr').filter(function() {
-	    return eval(stringToEval); //$(this).data(tag) !== undefined;
-	}).show( "slow" );
-
-}
-
-function selectTool(id){
-
-	$('#tool_id').val(id).change();
-	$("#all_form").appendTo("#"+id);
-}
-
-  </script>
-<% end %>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -30,7 +30,7 @@ $(document).delegate('div#tool_version_selector > div', 'new_content', function 
       url                 = menu_button.attr('data-url'),
       method              = menu_button.attr('data-method'),
       tool_name           = launch_form.find('select#tool_id option:selected').text().replace("Launch ", ""),
-      persistent          = /persistent/.test($('.pagination blink span').text());
+      persistent          = parseInt($('.psel-count').text()) > 0;
 
   /* If theres URL & method attributes on menu_button, use them instead of the form's */
   if (url)    launch_form.attr('action', url);
@@ -69,9 +69,6 @@ $(document).delegate('div#tool_version_selector > div', 'new_content', function 
     .unbind('change.launch_task')
     .bind('change.launch_task', function () {
       var checked = userfile_checkboxes.filter(':checked').length;
-
-      /* Update the button in the menu */
-      menu_button.button('option', 'label', (checked ? "Launch " : "Prepare ") + tool_name);
 
       /* And the launch_bar, if it exists */
       $('.launch_bar span.file_status').text(checked ? "Launch with " + checked + " file(s)" : "No files selected");
