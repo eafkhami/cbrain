@@ -2,11 +2,11 @@ $(document).ready(function() {
 
   var tagArray = [];
 
-  $("#toolSelectDialog").dialog({autoOpen : false, modal : true, show : "blind", hide : "blind", width: 600,
+  $("#toolDialog").dialog({autoOpen : false, modal : true, show : "blind", hide : "blind", width: 600,
     height: 500});
 
   // This get executed when the dialog opens
-  $("#toolSelectDialog").click(function() {
+  $("#toolSelectLink").click(function() {
 
     $(".tag_checkbox").removeAttr('checked');
     $("#AllTools").attr('checked', true);
