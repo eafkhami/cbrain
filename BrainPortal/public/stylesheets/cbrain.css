@@ -2439,7 +2439,9 @@ img {
   background-color: #137deb;
 }
 
-
+/* % ######################################################### */
+/* % Tools Dialog styling */
+/* % ######################################################### */
 
 /*container for tools table-- ehsan*/
 
@@ -2450,6 +2452,20 @@ img {
     width:400px;
     border: 1px solid grey;
 }
+
+#toolsDialogWrapper {
+  margin-right: 170px;
+}
+#toolsDialogLeftCol {
+  float: left;
+  width: 170px;
+}
+#toolsDialogRightCol {
+  float: right;
+  width: 100%;
+  margin-right: -170px;
+}
+
 
 
 

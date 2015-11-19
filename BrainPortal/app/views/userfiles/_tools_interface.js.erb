@@ -2,36 +2,38 @@ $(document).ready(function() {
 
   var tagArray = [];
 
-  $("#dialogTools").dialog({autoOpen : false, modal : true, show : "blind", hide : "blind", width: 600,
-    height: 525});
+  $("#toolSelectDialog").dialog({autoOpen : false, modal : true, show : "blind", hide : "blind", width: 600,
+    height: 500});
 
-  $("#tools").click(function() {
+  // This get executed when the dialog opens
+  $("#toolSelectDialog").click(function() {
+
     $(".tag_checkbox").removeAttr('checked');
-
     $("#AllTools").attr('checked', true);
-
     $('#tool_version_selector').html("");
-
-    $("#dialogTools").dialog( "open");
+    $("#searchToolSelectionBox").val("");
+    $('#toolSelectTable tr').show();
+    $("#toolSelectDialog").dialog( "open");
     return false;
+
   });
 
+  // This get executed when the dialog opens
   $("#clearTags").click(function() {
   	$(".tag_checkbox").attr("checked",false);
     tagArray = [];
 
-    $('#tools tr').show();
+    $('#toolSelectTable tr').show();
     $("#AllTools").attr('checked', true);
 
     $('#tool_version_selector').html("");
-    $("#searchToolBox").val("")
-
+    $("#searchToolSelectionBox").val("")
 
     return false;
   });
 
 
-  $("#searchToolBox").keyup(function(){
+  $("#searchToolSelectionBox").keyup(function(){
 
     if($(this).val().length == 1){
     	$(".tag_checkbox").attr("checked",false);
@@ -39,14 +41,15 @@ $(document).ready(function() {
       $("#AllTools").attr('checked', false);
     }else if($(this).val().length == 0){
       $("#AllTools").attr('checked', true);
+      $('#tool_version_selector').html("");
     }
 
     var startsWith = new RegExp("^" + $(this).val(), "i");
 
-    $('#tools tr').hide();
-  	$('#tools tr').filter(function() {
-      return startsWith.test($(this).find('.tools').text());
-  	}).show( "slow" );
+    $('#toolSelectTable tr').hide();
+  	$('#toolSelectTable tr').filter(function() {
+      return startsWith.test($(this).find('.toolsLink').text());
+  	}).show();
 
   });
 
@@ -55,21 +58,24 @@ $(document).ready(function() {
 
 		if ($(this).is(":checked")){
 
-      // If show all tools checkbox is clicked
-      if(this.id == "AllTools"){
+      if(this.id == "AllTools"){ // If show all tools checkbox is clicked
+
         // Uncheck all other tags, set tag array to empty and show all tools
         $(".tag_checkbox").not( "#AllTools" ).attr("checked",false);
         tagArray = [];
-        $('#tools tr').show();
+        $('#toolSelectTable tr').show();
         return;
+
       }else{ // If any other checkbox is checked turn all tools checkbox off
+
         $("#AllTools").attr('checked', false);
+
       }
 
-      tagArray.push($(this).attr('id'));
+      tagArray.push($(this).attr('name'));
 
 		}else{
-			var index = tagArray.indexOf($(this).attr('id'));
+			var index = tagArray.indexOf($(this).attr('name'));
 			if (index > -1) {
 			    tagArray.splice(index, 1);
 			}
@@ -78,6 +84,13 @@ $(document).ready(function() {
 
   	var stringToEval = "";
   	var arrayLength = tagArray.length;
+
+    if (arrayLength == 0){
+      $('#toolSelectTable tr').show();
+      $("#AllTools").attr('checked', true);
+      return;
+    }
+
   	for (var i = 0; i < arrayLength; i++) {
   		if (i+1 == arrayLength){
   		    stringToEval = stringToEval + "$(this).data(\"" + tagArray[i].toLowerCase() + "\") !== undefined";
@@ -86,11 +99,11 @@ $(document).ready(function() {
   		}
   	}
 
-    $('#tools tr').hide();
+    $('#toolSelectTable tr').hide();
 
-  	$('#tools tr').filter(function() {
+  	$('#toolSelectTable tr').filter(function() {
   	    return eval(stringToEval);
-  	}).show( "slow" );
+  	}).show();
 
 
 	});
@@ -99,7 +112,7 @@ $(document).ready(function() {
 });
 
 
-$(document).delegate('.tools', 'click', function(e) {
+$(document).delegate('.toolsLink', 'click', function(e) {
 
   var userfile_checkboxes = $("input[name='file_ids[]']"),
       persistent          = parseInt($('.psel-count').text()) > 0,
@@ -109,14 +122,14 @@ $(document).delegate('.tools', 'click', function(e) {
   $.ajax({
        type: "GET",
        url: "/tools/tool_config_select?button_label=" + buttonLabel,
-       data : "tool_id=" + $(this).attr("id"),
+       data : "tool_id=" + $(this).data("toolId"),
        dataType: "html",
        success: function (data) {
          $("#tool_version_selector").html(data)
        }
   });
 
-	$("#tool_selection_div").appendTo("#" + $(this).attr("id"));
+	$("#tool_version_selector").appendTo("#tool" + $(this).data("toolId"));
   return false;
 
 });

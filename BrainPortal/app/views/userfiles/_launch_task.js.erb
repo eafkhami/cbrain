@@ -41,8 +41,8 @@ $(document).delegate('div#tool_version_selector > div', 'new_content', function 
     .bind('click.launch_task', function (event) {
 
       // This was added to handle the popup dialog
-      $("#tool_selection_div").appendTo(launch_form);
-      $("#dialogTools").dialog( "close");
+      $("#tool_version_selector").appendTo(launch_form);
+      $("#toolSelectDialog").dialog( "close");
 
       /* If we have userfiles selected, we can launch the task right away! */
       if (persistent || userfile_checkboxes.is(':checked')) return;

@@ -1,74 +1,83 @@
-
 <%-
-  #
-  # CBRAIN Project
-  #
-  # Copyright (C) 2008-2012
-  # The Royal Institution for the Advancement of Learning
-  # McGill University
-  #
-  # This program is free software: you can redistribute it and/or modify
-  # it under the terms of the GNU General Public License as published by
-  # the Free Software Foundation, either version 3 of the License, or
-  # (at your option) any later version.
-  #
-  # This program is distributed in the hope that it will be useful,
-  # but WITHOUT ANY WARRANTY; without even the implied warranty of
-  # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  # GNU General Public License for more details.
-  #
-  # You should have received a copy of the GNU General Public License
-  # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  #
-  -%>
+#
+# CBRAIN Project
+#
+# Copyright (C) 2008-2012
+# The Royal Institution for the Advancement of Learning
+# McGill University
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+-%>
 
-  <div id="dialogTools" title="Select a Tool" >
+<div id="toolsDialog" title="Select a Tool" >
 
-  <div id="tool_selection_div" >
-    <div class="userfiles_bourreau_selector" id="tool_version_selector">
-    </div>
+  <div class="userfiles_bourreau_selector" id="tool_version_selector">
   </div>
+
   <br/>
 
 
+  <div id="toolsDialogWrapper">
+    <div id="toolsDialogLeftCol">
 
-  <table style="width: 100%; border:none; text-align: left;  vertical-align: text-top;">
-    <tr>
+      <div>
+        <b>Search: </b><input type="text" id="searchToolSelectionBox">
+      </div>
+      <br/>
+      <div>
+        All tools: <input type="checkbox" class="tag_checkbox" id="AllTools"/>
+      </div>
+      <br/>
 
-      <td style="border:none; text-align: left; vertical-align: text-top;">
+      <b>Type:</b>
+      <br/>
 
-        Search: <input type="text" id="searchToolBox"><br/><br/>
+      <% @tool_tags.each do |tag|%>
 
-        All tools: <input type="checkbox" class="tag_checkbox" style="margin-left:0px;" id="AllTools"/><br/><br/>
+        <%if tag.name.downcase == "preprocessing" || tag.name.downcase == "fmri" || tag.name.downcase == "dt1"               || tag.name.downcase == "structural" || tag.name.downcase == "genomic"%>
 
-        <b>Type:</b><br/>
-
-        <% @tool_tags.each do |tag|%>
-
-        <%if tag.name.downcase == "preprocessing" || tag.name.downcase == "fmri" || tag.name.downcase == "dt1" || tag.name.downcase == "structural" || tag.name.downcase == "genomic"%>
-        <%=tag.name.downcase%>: <input type="checkbox" class="tag_checkbox" style="margin-left:0px;" id="<%=tag.name%>"/><br/>
-        <% end %>
-
-        <% end %>
-
-        <br/><b>Sofware Package:</b><br/>
-
-        <% @tool_tags.each do |tag|%>
-
-        <%if tag.name.downcase == "fsl" || tag.name.downcase == "minc" || tag.name.downcase == "civet" || tag.name.downcase == "niak"%>
-        <%=tag.name.downcase%>: <input type="checkbox" class="tag_checkbox" style="margin-left:0px;" id="<%=tag.name%>"/><br/>
-        <% end %>
+              <%=tag.name.downcase%>:
+              <input type="checkbox" class="tag_checkbox" name="<%=tag.name%>"/><br/>
 
         <% end %>
 
-        <br/><a id="clearTags" href="#">clear selection</a>
+      <% end %>
 
-      </td>
+      <br/>
+      <b>Sofware Package:</b><br/>
 
-      <td style="width: 400px; border:none; text-align: left;">
+      <% @tool_tags.each do |tag|%>
+
+        <%if tag.name.downcase == "fsl" || tag.name.downcase == "minc" || tag.name.downcase == "civet" ||                       tag.name.downcase == "niak"%>
+              <%=tag.name.downcase%>:
+
+              <input type="checkbox" class="tag_checkbox" name="<%=tag.name%>"/><br/>
+        <% end %>
+
+      <% end %>
+
+      <br/>
+      <a id="clearTags" href="#">clear selection</a>
+
+    </div>
+    <div id="toolsDialogRightCol">
+
         <b>Tools:</b>
         <div class="tools-container">
-          <table id="tools" style="width: 400px; border:none;">
+
+          <table id="toolSelectTable" style="width: 400px; border:none;">
 
             <% if @tools_to_pick.present? %>
 
@@ -79,15 +88,13 @@
             data-<%= tool_tag.name %> = 'true'
             <%end%>
             >
-            <td id="<%= tool.id %>">
+            <td id="tool<%= tool.id %>">
 
               <%=
-              "<b><a href= '#' id=\"#{tool.id}\" class='tools'>#{tool.name}</a></b><br/>Tags: #{tool.tags.map{ |tag| tag.name }.join(', ')}<br/>".html_safe
+              "<b><a href= '#' data-tool-id=\"#{tool.id}\" class='toolsLink'>#{tool.name}</a></b><br/>Tags: #{tool.tags.map{ |tag| tag.name }.join(' ')}<br/>".html_safe
               %>
 
-
-
-              <%= link_to( "link to URL", tool.url) if !tool.url.nil?%>
+              <%= link_to( "Tool Website", tool.url) if !tool.url.nil?%>
 
             </td>
           </tr>
@@ -108,9 +115,12 @@
         </table>
       </div>
 
-    </td>
+    </div>
 
-  </tr>
-</table>
+  </div>
+
+
+
+
 
 </div>
