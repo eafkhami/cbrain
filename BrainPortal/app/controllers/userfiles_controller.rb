@@ -133,8 +133,21 @@ class UserfilesController < ApplicationController
     current_session.save_preferences
 
 
-    # This is for the tool selection dialog box.... we need the tools the user has access to and tags associated with the tools
+    # This is for the tool selection dialog box....
+    # we need the tools the user has access to and tags associated with the tools
     @tools_to_pick    = current_user.available_tools.where("tools.category <> 'background'")
+    top_tool_ids = current_user.meta[:top_tool_ids] || []
+
+    if !top_tool_ids.empty?
+      # Define top 5 tools for current users
+      top_5_tool_ids  = Hash[current_user.meta[:top_tool_ids].sort_by { |k,v| -v }[0..5]].keys
+      top_5_tools    = Tool.where(:id => top_5_tool_ids)
+
+      # Put the top 5 at beginning of the list
+      @tools_to_pick = @tools_to_pick  - top_5_tools
+      @tools_to_pick = top_5_tools + @tools_to_pick
+    end
+
     @tool_tags = Tag.where(:id => TagTool.select(:tag_id).map(&:tag_id).uniq)
     ######################################
 

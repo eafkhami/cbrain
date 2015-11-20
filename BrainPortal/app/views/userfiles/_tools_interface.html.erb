@@ -37,7 +37,7 @@
       </div>
       <br/>
       <div>
-        All tools: <input type="checkbox" class="tag_checkbox" id="AllTools"/>
+        All tools: <input type="checkbox" class="tag_checkbox" id="showAllTools"/>
       </div>
       <br/>
 
@@ -77,7 +77,7 @@
         <b>Tools:</b>
         <div class="tools-container">
 
-          <table id="toolSelectTable" style="width: 400px; border:none;">
+          <table id="toolSelectTable" >
 
             <% if @tools_to_pick.present? %>
 
@@ -88,13 +88,13 @@
             data-<%= tool_tag.name %> = 'true'
             <%end%>
             >
-            <td id="tool<%= tool.id %>">
+            <td id="tool_<%= tool.id %>">
 
               <%=
               "<b><a href= '#' data-tool-id=\"#{tool.id}\" class='toolsLink'>#{tool.name}</a></b><br/>Tags: #{tool.tags.map{ |tag| tag.name }.join(' ')}<br/>".html_safe
               %>
 
-              <%= link_to( "Tool Website", tool.url) if !tool.url.nil?%>
+              <%= link_to( "Tool Website", tool.url, :target => "_blank") if !tool.url.nil?%>
 
             </td>
           </tr>
@@ -118,9 +118,5 @@
     </div>
 
   </div>
-
-
-
-
 
 </div>

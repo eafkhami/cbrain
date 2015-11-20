@@ -42,7 +42,7 @@ $(document).delegate('div#tool_version_selector > div', 'new_content', function 
 
       // This was added to handle the popup dialog
       $("#tool_version_selector").appendTo(launch_form);
-      $("#toolSelectDialog").dialog( "close");
+      $("#toolsDialog").dialog( "close");
 
       /* If we have userfiles selected, we can launch the task right away! */
       if (persistent || userfile_checkboxes.is(':checked')) return;

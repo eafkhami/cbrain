@@ -2,29 +2,30 @@ $(document).ready(function() {
 
   var tagArray = [];
 
-  $("#toolDialog").dialog({autoOpen : false, modal : true, show : "blind", hide : "blind", width: 600,
-    height: 500});
+  $("#toolsDialog").dialog({autoOpen : false, modal : true, show : "blind", hide : "blind", width: 600,
+  height: 500});
 
   // This get executed when the dialog opens
   $("#toolSelectLink").click(function() {
 
     $(".tag_checkbox").removeAttr('checked');
-    $("#AllTools").attr('checked', true);
+    $("#showAllTools").attr('checked', true);
     $('#tool_version_selector').html("");
     $("#searchToolSelectionBox").val("");
     $('#toolSelectTable tr').show();
-    $("#toolSelectDialog").dialog( "open");
-    return false;
+    $("#toolsDialog").dialog( "open");
 
+    return false;
   });
 
-  // This get executed when the dialog opens
+  // This get executed when the clear selection link is clicked
   $("#clearTags").click(function() {
-  	$(".tag_checkbox").attr("checked",false);
+
+    $(".tag_checkbox").attr("checked",false);
     tagArray = [];
 
     $('#toolSelectTable tr').show();
-    $("#AllTools").attr('checked', true);
+    $("#showAllTools").attr('checked', true);
 
     $('#tool_version_selector').html("");
     $("#searchToolSelectionBox").val("")
@@ -32,106 +33,134 @@ $(document).ready(function() {
     return false;
   });
 
-
+  // Handles the search box; is called after each key stroke
   $("#searchToolSelectionBox").keyup(function(){
+    applyTagsAndSearch();
+  });
 
-    if($(this).val().length == 1){
-    	$(".tag_checkbox").attr("checked",false);
-      tagArray = [];
-      $("#AllTools").attr('checked', false);
-    }else if($(this).val().length == 0){
-      $("#AllTools").attr('checked', true);
-      $('#tool_version_selector').html("");
+  // This function is called when the all tools checkbox changes state
+  $("#showAllTools").change(function() {
+
+    $(".tag_checkbox").not( "#showAllTools" ).attr("checked",false);
+    tagArray = [];
+
+    if ($(this).is(":checked")){
+      $('#toolSelectTable tr').show();
+    }else{
+      $('#toolSelectTable tr').hide();
     }
-
-    var startsWith = new RegExp("^" + $(this).val(), "i");
-
-    $('#toolSelectTable tr').hide();
-  	$('#toolSelectTable tr').filter(function() {
-      return startsWith.test($(this).find('.toolsLink').text());
-  	}).show();
 
   });
 
+  // This function is called when a tag checkbox changes state
+  $(".tag_checkbox:not(#showAllTools)").change(function() {
 
-	$(".tag_checkbox").change(function() {
+    var selectedCheckBox = $(this);
 
-		if ($(this).is(":checked")){
+    if (selectedCheckBox.is(":checked")){
 
-      if(this.id == "AllTools"){ // If show all tools checkbox is clicked
+      $("#showAllTools").attr('checked', false);
+      tagArray.push(selectedCheckBox.attr('name'));
 
-        // Uncheck all other tags, set tag array to empty and show all tools
-        $(".tag_checkbox").not( "#AllTools" ).attr("checked",false);
-        tagArray = [];
+    }else{
+
+      var index = tagArray.indexOf(selectedCheckBox.attr('name'));
+      if (index > -1) tagArray.splice(index, 1);
+
+    }
+
+    applyTagsAndSearch();
+
+  });
+
+  // This function applys the tags and search word that are currently in the tools table
+  function applyTagsAndSearch(){
+
+    var arrayLength = tagArray.length,
+        searchBox   = $("#searchToolSelectionBox");
+
+    $('#tool_version_selector').html("");
+
+    if(searchBox.val().length == 0){ //If there search box is empty
+
+      // If there are no tags
+      if (arrayLength == 0){
         $('#toolSelectTable tr').show();
+        $("#showAllTools").attr('checked', true);
         return;
-
-      }else{ // If any other checkbox is checked turn all tools checkbox off
-
-        $("#AllTools").attr('checked', false);
-
       }
 
-      tagArray.push($(this).attr('name'));
+      applyTags(arrayLength);
 
-		}else{
-			var index = tagArray.indexOf($(this).attr('name'));
-			if (index > -1) {
-			    tagArray.splice(index, 1);
-			}
+    }else{ //If there search box is not empty
 
-		}
+      var startsWith = new RegExp("^" + searchBox.val(), "i");
 
-  	var stringToEval = "";
-  	var arrayLength = tagArray.length;
+      // If there are no tags
+      if (arrayLength == 0){
 
-    if (arrayLength == 0){
-      $('#toolSelectTable tr').show();
-      $("#AllTools").attr('checked', true);
-      return;
+        $('#toolSelectTable tr').show();
+        $('#toolSelectTable tr').filter(function() {
+          if(startsWith.test($(this).find('.toolsLink').text()) == false) $(this).hide();
+        });
+
+        return;
+      }
+
+      applyTags(arrayLength);
+
+      $('#toolSelectTable tr:visible').filter(function() {
+        if(startsWith.test($(this).find('.toolsLink').text()) == false) $(this).hide();
+      });
     }
+  }
 
-  	for (var i = 0; i < arrayLength; i++) {
-  		if (i+1 == arrayLength){
-  		    stringToEval = stringToEval + "$(this).data(\"" + tagArray[i].toLowerCase() + "\") !== undefined";
-  		}else{
-  			stringToEval = stringToEval + "$(this).data(\"" + tagArray[i].toLowerCase() + "\") !== undefined || ";
-  		}
-  	}
+  // This function applys the tags that are currently selected in the table
+  function applyTags(arrayLength){
 
     $('#toolSelectTable tr').hide();
+    $('#toolSelectTable tr').filter(function() {
+      for (var i = 0; i < arrayLength; i++) {
+        if($(this).data(tagArray[i].toLowerCase()) !== undefined) $(this).show();
+      }
+    });
+  }
 
-  	$('#toolSelectTable tr').filter(function() {
-  	    return eval(stringToEval);
-  	}).show();
+  // This is executed when a tool link is clicked
+  // It performs an ajax request to the server to get the tool versions currently available
+  $('.toolsLink').click(function(e) {
 
-
-	});
-
-
-});
-
-
-$(document).delegate('.toolsLink', 'click', function(e) {
-
-  var userfile_checkboxes = $("input[name='file_ids[]']"),
-      persistent          = parseInt($('.psel-count').text()) > 0,
-      buttonLabel = (persistent || userfile_checkboxes.is(':checked')) ? "Launch " : "Prepare ";
+    var userfile_checkboxes = $("input[name='file_ids[]']"),
+        persistent          = parseInt($('.psel-count').text()) > 0,
+        buttonLabel         = (persistent || userfile_checkboxes.is(':checked')) ? "Launch " : "Prepare ";
 
 
-  $.ajax({
-       type: "GET",
-       url: "/tools/tool_config_select?button_label=" + buttonLabel,
-       data : "tool_id=" + $(this).data("toolId"),
-       dataType: "html",
-       success: function (data) {
-         $("#tool_version_selector").html(data)
-       }
+    // passing the button label is much cleaner this way then writing a bunch of jquery to
+    // find and change the button after it comes back with the wr label. Also going forward if
+    // the structure of the returned html data changes, the jquery may need to change...
+    $.ajax({
+      type: "GET",
+      url: "/tools/tool_config_select?button_label=" + buttonLabel,
+      data : "tool_id=" + $(this).data("toolId"),
+      dataType: "html",
+      success: function (data) {
+        $("#tool_version_selector").html(data)
+      }
+    });
+
+    $("#tool_version_selector").appendTo("#tool_" + $(this).data("toolId"));
+    return false;
   });
 
-	$("#tool_version_selector").appendTo("#tool" + $(this).data("toolId"));
-  return false;
+  $("#tool_version_selector").delegate("#showAdditionalToolInfo", 'click', function (e) {
+    $(".additionalToolInfo").show();
+    return false;
+  });
+
 
 });
+
+
+
 
 

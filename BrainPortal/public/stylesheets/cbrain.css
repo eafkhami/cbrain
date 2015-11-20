@@ -1507,7 +1507,6 @@ pre {
 
 .userfiles_bourreau_selector {
   padding: 0 1em;
-  display: table-row;
 }
 
 #userfiles_table td.type_icon,
@@ -2453,6 +2452,15 @@ img {
     border: 1px solid grey;
 }
 
+#toolSelectTable {
+  width: 400px;
+  border:none;
+}
+
+#toolSelectTable td {
+  text-align: center;
+}
+
 #toolsDialogWrapper {
   margin-right: 170px;
 }
@@ -2464,6 +2472,10 @@ img {
   float: right;
   width: 100%;
   margin-right: -170px;
+}
+
+.additionalToolInfo{
+  display: none;
 }
 
 
