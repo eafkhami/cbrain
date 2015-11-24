@@ -143,7 +143,8 @@ class Tool < ActiveRecord::Base
 
   end
 
-  # Oveloading the getter method to return current tags, in an array by default or if :string is passed as
+  # Oveloading the getter method to return current tags,
+  # in an array by default or if :string is passed as
   # an argument the return type will be of class String
   def application_tags(return_class = :array)
     set_attribute(:application_tags, return_class)
@@ -156,7 +157,6 @@ class Tool < ActiveRecord::Base
   def application_type(return_class = :array)
     set_attribute(:application_type, return_class)
   end
-
 
   private
 
