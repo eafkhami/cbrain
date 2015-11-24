@@ -65,6 +65,21 @@
 </p>
 
 <p>
+  <%= f.label :application_package_name, "Package name:" %><br>
+  <%= f.text_field :application_package_name %><br>
+</p>
+
+<p>
+  <%= f.label :application_type, "Tool type:" %><br>
+  <%= f.text_field :application_type %><br>
+</p>
+
+<p>
+  <%= f.label :application_tags, "Comma seperated tags:" %><br>
+  <%= f.text_field :application_tags %><br>
+</p>
+
+<p>
   Tags:
   <div class="field_explanation">Please choose the appropriate tags. Use the control or shift command to choose multiple tags.</div><br/>
   <select name="tag_ids[]" multiple="multiple" style="width:150px" >

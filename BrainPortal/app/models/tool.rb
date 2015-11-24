@@ -49,7 +49,7 @@ class Tool < ActiveRecord::Base
   validates_uniqueness_of :name, :select_menu_text, :cbrain_task_class
   validates_presence_of   :name, :cbrain_task_class, :user_id, :group_id, :category, :select_menu_text, :description
   validates_inclusion_of  :category, :in => Categories
-  validates :url, :url_format => true
+  #validates :url, :url_format => true
 
 
   has_and_belongs_to_many :tags
@@ -59,7 +59,8 @@ class Tool < ActiveRecord::Base
   has_many                :bourreaux, :through => :tool_configs, :uniq => true
 
   attr_accessible         :name, :user_id, :group_id, :category, :license_agreements,
-                          :cbrain_task_class, :select_menu_text, :description, :url
+                          :cbrain_task_class, :select_menu_text, :description, :url,
+                          :application_type, :application_tags, :application_package_name
 
 
   # CBRAIN extension
@@ -105,7 +106,69 @@ class Tool < ActiveRecord::Base
     self.tag_ids = new_tag_set
   end
 
+  # Get an array of tags associated with all tools
+  def self.get_all_application_tags
+    Tool.select([:application_tags, :id]).all.map{|t| t.application_tags}.flatten.uniq
+  end
+
+  def self.get_all_application_types
+    Tool.select([:application_type, :id]).all.map{|t| t.application_type}.flatten.uniq
+  end
+
+  def self.get_all_application_package_names
+    Tool.select([:application_package_name, :id]).all.map{|t| t.application_package_name}.flatten.uniq
+  end
+
+
+  # Overloading assignment operator to accept arrays and strings for application_tag
+  def application_tags=(val)
+
+    if val.is_a? String
+
+      tag = val.split(',').map(&:strip).uniq
+      tag.delete("")
+      tag = tag.join(',')
+
+    elsif val.is_a? Array
+
+      tag = val.map(&:strip).uniq
+      tag.delete("")
+      tag = tag.join(',')
+
+    else
+      tag = nil
+    end
+
+    write_attribute(:application_tags, tag.downcase)
+
+  end
+
+  # Oveloading the getter method to return current tags, in an array by default or if :string is passed as
+  # an argument the return type will be of class String
+  def application_tags(return_class = :array)
+    set_attribute(:application_tags, return_class)
+  end
+
+  def application_package_name(return_class = :array)
+    set_attribute(:application_package_name, return_class)
+  end
+
+  def application_type(return_class = :array)
+    set_attribute(:application_type, return_class)
+  end
+
+
   private
+
+  def set_attribute(attribute_name, return_class)
+    tag = read_attribute(attribute_name)
+
+    if return_class == :string
+      tag.present? ? tag : []
+    else
+      tag.present? ? tag.split(',') : []
+    end
+  end
 
   def set_default_attributes #:nodoc:
     self.select_menu_text ||= "Launch #{self.name}"
