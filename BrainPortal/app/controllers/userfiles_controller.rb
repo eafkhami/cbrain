@@ -148,10 +148,6 @@ class UserfilesController < ApplicationController
       @tools_to_pick = top_5_tools + @tools_to_pick
     end
 
-    @tool_tags = Tag.where(:id => TagTool.select(:tag_id).map(&:tag_id).uniq)
-    #@tool_tags = Tool.get_all_application_tags
-    ######################################
-
     respond_to do |format|
       format.html
       format.js

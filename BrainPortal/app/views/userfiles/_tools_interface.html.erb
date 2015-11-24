@@ -30,8 +30,8 @@
 
 
   <div id="toolsDialogWrapper">
-    <div id="toolsDialogLeftCol">
 
+    <div id="toolsDialogLeftCol">
       <div>
         <b>Search: </b><input type="text" id="searchToolSelectionBox">
       </div>
@@ -43,37 +43,29 @@
 
       <b>Type:</b>
       <br/>
-
-      <% @tool_tags.each do |tag|%>
-
-        <%if tag.name.downcase == "preprocessing" || tag.name.downcase == "fmri" || tag.name.downcase == "dt1"               || tag.name.downcase == "structural" || tag.name.downcase == "genomic"%>
-
-              <%=tag.name.downcase%>:
-              <input type="checkbox" class="tag_checkbox" name="<%=tag.name%>"/><br/>
-
-        <% end %>
-
+      <% Tool.get_all_application_types.each do |tag|%>
+              <%=tag%>:
+              <input type="checkbox" class="tag_checkbox" name="<%=tag%>"/><br/>
       <% end %>
-
       <br/>
       <b>Sofware Package:</b><br/>
-
-      <% @tool_tags.each do |tag|%>
-
-        <%if tag.name.downcase == "fsl" || tag.name.downcase == "minc" || tag.name.downcase == "civet" ||                       tag.name.downcase == "niak"%>
-              <%=tag.name.downcase%>:
-
-              <input type="checkbox" class="tag_checkbox" name="<%=tag.name%>"/><br/>
-        <% end %>
-
+      <% Tool.get_all_application_package_names.each do |tag|%>
+              <%=tag%>:
+              <input type="checkbox" class="tag_checkbox" name="<%=tag%>"/><br/>
       <% end %>
 
       <br/>
+      <b>Tags:</b><br/>
+      <% Tool.get_all_application_tags.each do |tag|%>
+              <%=tag%>:
+              <input type="checkbox" class="tag_checkbox" name="<%=tag%>"/><br/>
+      <% end %>
+      <br/>
+
       <a id="clearTags" href="#">clear selection</a>
-
     </div>
-    <div id="toolsDialogRightCol">
 
+    <div id="toolsDialogRightCol">
         <b>Tools:</b>
         <div class="tools-container">
 
@@ -84,17 +76,17 @@
             <%@tools_to_pick.each do |tool|%>
 
             <tr
-            <%tool.tags.each do |tool_tag|%>
-            data-<%= tool_tag.name %> = 'true'
+            <%tool.get_all_tags.each do |tool_tag|%>
+            data-<%= tool_tag %> = 'true'
             <%end%>
             >
             <td id="tool_<%= tool.id %>">
 
               <%=
-              "<b><a href= '#' data-tool-id=\"#{tool.id}\" class='toolsLink'>#{tool.name}</a></b><br/>Tags: #{tool.tags.map{ |tag| tag.name }.join(' ')}<br/>".html_safe
+              "<b><a href= '#' data-tool-id=\"#{tool.id}\" class='toolsLink'>#{tool.name}</a></b><br/>Tags: #{tool.get_all_tags.join(' ')}<br/>".html_safe
               %>
 
-              <%= link_to( "Tool Website", tool.url, :target => "_blank") if !tool.url.nil?%>
+              <%= link_to( "Tool Website", tool.url, :target => "_blank") if tool.url.present? %>
 
             </td>
           </tr>

@@ -2447,7 +2447,7 @@ img {
 .tools-container{
     overflow-y:auto;
     overflow-x:hidden;
-    height:400px;
+    height:500px;
     width:400px;
     border: 1px solid grey;
 }
