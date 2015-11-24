@@ -39,7 +39,6 @@ class Tag < ActiveRecord::Base
                                   :message  => 'only the following characters are valid: alphanumeric characters, spaces, _, -, =, +, ., ?, !'
 
   has_and_belongs_to_many :userfiles
-  has_and_belongs_to_many :tools
 
   belongs_to              :user
   belongs_to              :group

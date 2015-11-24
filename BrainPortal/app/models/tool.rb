@@ -52,7 +52,6 @@ class Tool < ActiveRecord::Base
   #validates :url, :url_format => true
 
 
-  has_and_belongs_to_many :tags
   belongs_to              :user
   belongs_to              :group
   has_many                :tool_configs, :dependent => :destroy
