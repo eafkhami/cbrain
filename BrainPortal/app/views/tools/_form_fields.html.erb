@@ -80,15 +80,7 @@
 </p>
 
 <p>
-  Tags:
-  <div class="field_explanation">Please choose the appropriate tags. Use the control or shift command to choose multiple tags.</div><br/>
-  <select name="tag_ids[]" multiple="multiple" style="width:150px" >
-     <%= options_from_collection_for_select current_user.available_tags, 'id', 'name', @tool.get_tags_for_user(current_user).map(&:id) %>
-  </select>
-</p>
-
-<p>
-  <%= f.label :url, "URL to info page:" %><br>
+  <%= f.label :url, "Tool URL:" %><br>
   <%= f.text_field :url %><br>
 </p>
 

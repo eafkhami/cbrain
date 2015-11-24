@@ -159,6 +159,7 @@ class Tool < ActiveRecord::Base
     get_tag_attribute(:application_type, return_class)
   end
 
+  # returns all tags associated with a tool
   def get_all_tags
     application_type + application_package_name + application_tags
   end
