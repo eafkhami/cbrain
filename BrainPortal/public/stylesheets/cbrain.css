@@ -1507,7 +1507,6 @@ pre {
 
 .userfiles_bourreau_selector {
   padding: 0 1em;
-  display: table-row;
 }
 
 #userfiles_table td.type_icon,
@@ -2392,6 +2391,51 @@ img {
 
 .no-close .ui-dialog-titlebar-close {
   display: none;
+}
+
+/* % ######################################################### */
+/* % User Files Table Contextmenu styling */
+/* % ######################################################### */
+
+.context-menu {
+  display: none;
+  position: absolute;
+  z-index: 10;
+  padding: 12px 0;
+  width: 240px;
+  background-color: #fff;
+  border: solid 1px #dddddd;
+  box-shadow: 1px 1px 2px #cfcfcf;
+}
+
+.context-menu--active {
+  display: block;
+}
+
+.context-menu__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.context-menu__item {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.context-menu__item:last-child {
+  margin-bottom: 0;
+}
+
+.context-menu__link {
+  display: block;
+  padding: 4px 12px;
+  text-decoration: none;
+}
+
+.context-menu__link:hover {
+  color: #fff;
+  background-color: #137deb;
 }
 
 

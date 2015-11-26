@@ -18,7 +18,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 */
 
@@ -298,7 +298,35 @@
         checkbox
           .prop('checked', !checkbox.prop('checked'))
           .trigger('change');
+
+		  if(checkbox.prop('checked')){
+		  	$("#menulinks").show();
+		  }else{
+		  	$("#menulinks").hide();
+		  }
+
       });
+
+
+    /* trigger selection checkboxes when the row is right clicked */
+    dyntbl
+      .undelegate('.dt-body > .dt-sel-row', 'contextmenu.dyn-tbl')
+      .delegate('.dt-body > .dt-sel-row', 'contextmenu.dyn-tbl', function (event) {
+        if (!$(this).children('td').is(event.target)) return;
+
+        var checkbox = $(this)
+          .find('.dt-sel-check')
+          .first();
+
+		if (!checkbox.prop('checked')){  //if the checkbox is not checked, check it
+        checkbox
+          .prop('checked', true)
+          .trigger('change');
+		  $("#menulinks").show(); //show action items
+	  	}
+
+      });
+
 
     /* in single select mode, there is no need for a header checkbox */
     if (selection_mode == 'single')
