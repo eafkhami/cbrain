@@ -1107,28 +1107,26 @@ class UserfilesController < ApplicationController
     redirect_to :action  => :index
   end
 
+  # This action unarchives collections and uncompresses compressed files
   def enlarge
-
     files = split_files_and_collections[0]
     collections = split_files_and_collections[1]
     skipped_messages   = {}
 
-    skipped_messages = compress(files,skipped_messages,"enlarge") if files.present?
+    skipped_messages = compress_management(files,skipped_messages,"enlarge") if files.present?
     archive_management(collections, skipped_messages,"unarchived") if collections.present?
 
     redirect_to :action => :index, :format => request.format.to_sym
-
   end
 
 
-
-  def squeez
-
+  # This action archives collections and compresses files
+  def squeeze
     files = split_files_and_collections[0]
     collections = split_files_and_collections[1]
     skipped_messages   = {}
 
-    skipped_messages = compress(files,skipped_messages,"squeez") if files.present?
+    skipped_messages = compress_management(files,skipped_messages,"squeeze") if files.present?
     archive_management(collections, skipped_messages,"archived") if collections.present?
 
     redirect_to :action => :index, :format => request.format.to_sym
@@ -1157,9 +1155,8 @@ class UserfilesController < ApplicationController
   end
 
 
-  # Compress or uncompress a set of userfiles; only supported
-  # for SingleFiles.
-  def compress(files,skipped_messages,verb)  #:nodoc:
+  # Compress or uncompress userfiles
+  def compress_management(files,skipped_messages,verb)  #:nodoc:
 
     to_uncompress      = []
     to_compress = []
@@ -1168,7 +1165,7 @@ class UserfilesController < ApplicationController
     files.each do |userfile|
 
         # Basic verification
-        if verb == "squeez" && userfile.name =~ /\.gz$/i
+        if verb == "squeeze" && userfile.name =~ /\.gz$/i
           (skipped_messages["Already compressed file"] ||= []) << userfile
           next
         elsif verb == "enlarge" && !(userfile.name =~ /\.gz$/i)
@@ -1198,7 +1195,7 @@ class UserfilesController < ApplicationController
       # Split in 2 categories
       if verb == "enlarge" && basename =~ /\.gz$/i
         to_uncompress << [ userfile, :uncompress, destbase ]
-      elsif verb == "squeez"
+      elsif verb == "squeeze"
         to_compress   << [ userfile, :compress,   destbase ]
       end
 
@@ -1303,77 +1300,67 @@ class UserfilesController < ApplicationController
     end
 
     # Nothing to do?
-    if userfiles.present?
+    return if userfiles.blank?
 
-      # Main processing in background
-      CBRAIN.spawn_with_active_records(current_user, "ArchiveFile") do
-        success_list = []
-        failed_list  = {}
+    # Main processing in background
+    CBRAIN.spawn_with_active_records(current_user, "ArchiveFile") do
+      success_list = []
+      failed_list  = {}
 
-        userfiles.each_with_index do |userfile,i|
-          if userfile.is_a?(TarArchive)
-            begin
-              $0 = "UnarchiveFile ID=#{userfile.id} #{i+1}/#{userfiles.size}\0"
-
-              basename = userfile.name.dup
-              raise "Only files with extensions .tar, .tar.gz and .tgz are supported." unless
-              basename.sub!(/\.(tar(\.gz)?|tgz)$/, '')
-
-              raise "Collection '#{basename}' already exists." if
-              current_user.userfiles.exists?(
-              :name             => basename,
-              :data_provider_id => userfile.data_provider_id
-              )
-
-              userfile.sync_to_cache
-              collection      = userfile.dup.becomes(FileCollection)
-              collection.name = basename
-              collection.extract_collection_from_archive_file(userfile.cache_full_path.to_s)
-              userfile.destroy
-
-              error_message = ""
-            rescue => ex
-              error_message = ex.message
-            end
-          elsif userfile.archived?
+      userfiles.each_with_index do |userfile,i|
+        if userfile.is_a?(TarArchive)
+          begin
             $0 = "UnarchiveFile ID=#{userfile.id} #{i+1}/#{userfiles.size}\0"
-            error_message = userfile.provider_unarchive
-          else
-            $0 = "ArchiveFile ID=#{userfile.id} #{i+1}/#{userfiles.size}\0"
-            error_message = userfile.provider_archive
-          end
 
-          if error_message.blank?
-            success_list << userfile
-          else
-            (failed_list[error_message] ||= []) << userfile
+            basename = userfile.name.dup
+            raise "Only files with extensions .tar, .tar.gz and .tgz are supported." unless
+            basename.sub!(/\.(tar(\.gz)?|tgz)$/, '')
+
+            raise "Collection '#{basename}' already exists." if
+            current_user.userfiles.exists?(
+            :name             => basename,
+            :data_provider_id => userfile.data_provider_id
+            )
+
+            userfile.sync_to_cache
+            collection      = userfile.dup.becomes(FileCollection)
+            collection.name = basename
+            collection.extract_collection_from_archive_file(userfile.cache_full_path.to_s)
+            userfile.destroy
+
+            error_message = ""
+          rescue => ex
+            error_message = ex.message
           end
+        elsif userfile.archived?
+          $0 = "UnarchiveFile ID=#{userfile.id} #{i+1}/#{userfiles.size}\0"
+          error_message = userfile.provider_unarchive
+        else
+          $0 = "ArchiveFile ID=#{userfile.id} #{i+1}/#{userfiles.size}\0"
+          error_message = userfile.provider_archive
         end
 
-        if success_list.present?
-          if verb == "archived"
-            notice_message_sender("Finished archiving file(s)",success_list)
-          else
-            notice_message_sender("Finished unarchiving file(s)",success_list)
-          end
+        if error_message.blank?
+          success_list << userfile
+        else
+          (failed_list[error_message] ||= []) << userfile
         end
-        if failed_list.present?
-          error_message_sender("Error when archiving/unarchiving file(s)",failed_list)
+      end
+
+      if success_list.present?
+        if verb == "archived"
+          notice_message_sender("Finished archiving file(s)",success_list)
+        else
+          notice_message_sender("Finished unarchiving file(s)",success_list)
         end
-      end # spawn
+      end
+      if failed_list.present?
+        error_message_sender("Error when archiving/unarchiving file(s)",failed_list)
+      end
+    end # spawn
 
-      flash[:notice] = (flash[:notice] || "") + "#{view_pluralize(userfiles.size, "file collection")} being #{verb} in background.\n"
-    end
+    flash[:notice] = (flash[:notice] || "") + "#{view_pluralize(userfiles.size, "file collection")} being #{verb} in background.\n"
 
-  end
-
-
-  # Adds the persistent userfile ids to the params[:file_ids] argument
-  def auto_add_persistent_userfile_ids #:nodoc:
-    params[:file_ids] ||= []
-    if params[:ignore_persistent].blank?
-      params[:file_ids] = params[:file_ids] | current_session.persistent_userfile_ids_list
-    end
   end
 
   # Verify that all files selected for an operation

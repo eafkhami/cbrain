@@ -121,7 +121,7 @@ CbrainRailsPortal::Application.routes.draw do
       post   'create_collection'
       put    'update_multiple'
       post   'change_provider'
-      post   'squeez'
+      post   'squeeze'
       post   'enlarge'
       post   'quality_control'
       post   'quality_control_panel'

@@ -299,11 +299,11 @@
           .prop('checked', !checkbox.prop('checked'))
           .trigger('change');
 
-		  if(checkbox.prop('checked')){
-		  	$("#menulinks").show();
-		  }else{
-		  	$("#menulinks").hide();
-		  }
+		    /*if(checkbox.prop('checked')){
+		  	 $("#menulinks").show();
+		    }else{
+		  	  $("#menulinks").hide();
+		    }*/
 
       });
 
@@ -318,14 +318,15 @@
           .find('.dt-sel-check')
           .first();
 
-		if (!checkbox.prop('checked')){  //if the checkbox is not checked, check it
-        checkbox
-          .prop('checked', true)
-          .trigger('change');
-		  $("#menulinks").show(); //show action items
-	  	}
+		    if (!checkbox.prop('checked')){  //if the checkbox is not checked, check it
+          checkbox
+            .prop('checked', true)
+            .trigger('change');
 
-      });
+            $("#menulinks").show(); //show action items
+	  	   }
+
+    });
 
 
     /* in single select mode, there is no need for a header checkbox */

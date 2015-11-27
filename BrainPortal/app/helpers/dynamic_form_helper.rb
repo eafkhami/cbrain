@@ -232,11 +232,19 @@ module DynamicFormHelper
     submit_tag(name, options)
   end
 
-  # A submit button that can be outside the form it submits,
-  # which is defined by +form_id+.
+  # A submit button that highjacks the submission of the form and can be
+  # outside of the form it submits, which is defined by +form_id+.
+  # The highjacking can be sending to a different url, requesting a
+  # different data type, changing the http method, etc.
   #
   # Options:
+  # [:url] url to submit to.
+  # [:datatype] the datatype expected from the request (HTML, XML, script...).
+  # [:method] HTTP method to use for the request.
+  # [:target] selector for elements to update prior to or after the
+  #          the request is sent.
   # [:confirm] Confirm message to display before sending the request.
+  # [:ajax_submit] Submit using ajax. Defaults to true.
   def external_highjacker_submit_button(name, form_id, options = {})
     options_setup("external_highjacker_submit_button", options)
 
@@ -244,6 +252,7 @@ module DynamicFormHelper
     unless ajax_submit.nil?
       options["data-ajax-submit"] = ajax_submit.to_s
     end
+
     options["data-associated-form"] = form_id
 
     submit_tag(name, options)
