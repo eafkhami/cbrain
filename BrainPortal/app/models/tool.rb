@@ -101,25 +101,17 @@ class Tool < ActiveRecord::Base
 
   # Overloading assignment operator to accept arrays and strings for application_tag
   def application_tags=(val)
+    set_tag_attribute(:application_tags, val)
+  end
 
-    if val.is_a? String
+  # Overloading assignment operator to accept arrays and strings for application_package_name
+  def application_package_name=(val)
+    set_tag_attribute(:application_package_name, val)
+  end
 
-      tag = val.split(',').map(&:strip).uniq
-      tag.delete("")
-      tag = tag.join(',')
-
-    elsif val.is_a? Array
-
-      tag = val.map(&:strip).uniq
-      tag.delete("")
-      tag = tag.join(',')
-
-    else
-      tag = nil
-    end
-
-    write_attribute(:application_tags, tag.downcase)
-
+  # Overloading assignment operator to accept arrays and strings for application_type
+  def application_type=(val)
+    set_tag_attribute(:application_type, val)
   end
 
   # Oveloading the getter method to return current tags,
@@ -148,6 +140,32 @@ class Tool < ActiveRecord::Base
 
   def url_present? #:nodoc:
     url.present?
+  end
+
+  def set_tag_attribute(attribute_name, val) #:nodoc:
+
+    if val.is_a? String
+
+      # This doesn't allow tags to have white spaces or non-alphanumeric values in them
+      tag = val.gsub(/[^0-9a-z ]/i,' ').split(/[\s]+/).uniq
+      tag.delete("")
+      tag = tag.join(',')
+      tag = tag.downcase if attribute_name == :application_tags
+
+    elsif val.is_a? Array
+
+      # removes all non-alphanumeric values in each array element and splits elements with white spaces
+      # into multiple different elements
+      tag = val.map{|e| e.gsub(/[^0-9a-z ]/i,' ').strip.split(/[\s]+/)}.flatten.uniq
+      tag.delete("")
+      tag = tag.join(',')
+      tag = tag.downcase if attribute_name == :application_tags
+
+    else
+      tag = nil
+    end
+
+    write_attribute(attribute_name, tag)
   end
 
   def get_tag_attribute(attribute_name, return_class) #:nodoc:
